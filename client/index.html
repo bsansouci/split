@@ -17,9 +17,11 @@
         FB.api('/me?fields=first_name', function(data) {
           var welcomeBlock = document.getElementById('fb-welcome');
           welcomeBlock.innerHTML = 'Hello, ' + data.first_name + '!';
+          onConnected();
         });
       }
     }
+
 
     FB.getLoginStatus(function(response) {
       // Check login status on load, and if the user is
@@ -42,6 +44,16 @@
      js.src = "//connect.facebook.net/en_US/sdk.js";
      fjs.parentNode.insertBefore(js, fjs);
    }(document, 'script', 'facebook-jssdk'));
+
+
+  function onConnected() {
+    FB.ui({method: 'apprequests',
+      message: 'Yo Bing',
+      to: '100001439708199'
+    }, function(response){
+      console.log(response);
+    });
+  }
 </script>
 <h1 id="fb-welcome"></h1>
 </body>
