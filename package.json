@@ -1,0 +1,24 @@
+{
+  "name": "split",
+  "version": "0.0.0",
+  "description": "Maybe a game",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bsansouci/split.git"
+  },
+  "author": "us",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bsansouci/split/issues"
+  },
+  "homepage": "https://github.com/bsansouci/split",
+  "dependencies": {
+    "express": "^4.9.7",
+    "body-parser": "^1.9.0"
+  }
+}
