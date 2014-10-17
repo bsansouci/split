@@ -19,7 +19,7 @@ http.createServer(app).listen(80, function() {
 var secure = express();
 secure.use(express.static(__dirname + '/client/'));
 secure.use(bodyParser.json());       // to support JSON-encoded bodies
-secure.use(bodyParser.urlencoded());
+secure.use(bodyParser.urlencoded({extended: true}));
 
 secure.post("/", function(req, res, next){
   res.sendFile("index.html", { root: path.join(__dirname, 'client') });
