@@ -12,7 +12,7 @@ var app = express();
 
 app.use(express.static(__dirname + '/client/'));
 app.use(bodyParser.json());       // to support JSON-encoded bodies
-app.use(bodyParse.urlencoded({extended: true});
+app.use(bodyParse.urlencoded({extended: true}));
 
 http.createServer(app).listen(80, function() {
   console.log("HTTP server running on port", 80);
