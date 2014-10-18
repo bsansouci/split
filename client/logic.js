@@ -29,7 +29,10 @@ function reverseMove(move){
   move.destY = BOARD_SIZE - move.destY;
 }
 
-function possibleSubMoves(piece) {
+
+// This function sets isFinal correctly for 1 submove turns, but
+// if there are jumps, the final one needs to be manually set.
+function possibleSubMoves(piece, inProgress) {
   var xOffsets;
   var yOffsets;
   if (piece.isKing){
@@ -51,7 +54,7 @@ function possibleSubMoves(piece) {
     if (!isValid(x,y)){
       continue;
     }
-    if (board[x][y]){
+    if (inProgress || board[x][y]){
       x += xOffsets[i];
       y += yOffsets[i];
       isFinal = false;
@@ -71,10 +74,61 @@ function possibleSubMoves(piece) {
 }
 
 function makeFullMove(moves) {
+  var last;
+  var failure = false;
+  for (var move in moves){
+    var x = move.srcX;
+    var y = move.srcY;
+    if (isValid(x,y) && board[x][y]){
+      if (possibleSubMoves(board[x][y].filter(move.equals){
+        // Valid move
+        last = move;
+        p = board[x][y];
+        p.x = move.destX;
+        p.y = move.destY;
+        board[p.x][p.y] = p;
+        board[x][y] = null;
+      } else {
+        failure = true;
+        break;
+      }
+    }
+  }
 
+  if (failure){
+    // Revert piece moves
+    if (last){
+      var first = move[0];
+      p = board[last.destX][last.destY];
+      p.x = first.srcX;
+      p.y = first.srcY;
+      board[last.destX][last.destY] = null;
+      board[p.x][p.y] = p;
+    }
+  } else {
+    // Remove jumped pieces
+    for (move in moves){
+      mid = getMiddle(move);
+      if (!board[mid.x][mid.y].ally){
+        pieceCaptured(board[mid.x][mid.y]);
+        board[mid.x][mid.y] = null;
+      }
+    }
+  }
 }
 
-function makeEnemyMove() {
+function pieceCaptured(piece){
+  // TODO: Just in case we want some action here...
+}
 
+function getMiddle(move){
+  return {
+    x: (move.destX - move.srcX)/2 + move.srcX,
+    y: (move.destY - move.srcY)/2 + move.srcY,
+}
+
+function makeEnemyMove(moves) {
+  moves.map(reverseMove);
+  makeFullMove(moves);
 }
 
