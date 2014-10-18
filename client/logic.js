@@ -80,7 +80,7 @@ function makeFullMove(moves) {
     var x = move.srcX;
     var y = move.srcY;
     if (isValid(x,y) && board[x][y]){
-      if (possibleSubMoves(board[x][y].filter(move.equals){
+      if (possibleSubMoves(board[x][y].filter(move.equals))){
         // Valid move
         last = move;
         p = board[x][y];
@@ -119,12 +119,14 @@ function makeFullMove(moves) {
 
 function pieceCaptured(piece){
   // TODO: Just in case we want some action here...
+  return;
 }
 
 function getMiddle(move){
   return {
     x: (move.destX - move.srcX)/2 + move.srcX,
-    y: (move.destY - move.srcY)/2 + move.srcY,
+    y: (move.destY - move.srcY)/2 + move.srcY
+  }
 }
 
 function makeEnemyMove(moves) {
