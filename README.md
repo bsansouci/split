@@ -7,4 +7,3 @@ Simply run
 ```
 npm install
 ```
-
