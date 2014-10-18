@@ -36,14 +36,14 @@ function possibleSubMoves(piece, inProgress) {
   var xOffsets;
   var yOffsets;
   if (piece.isKing){
-    var xOffsets = [1,1,-1,-1];
-    var yOffsets = [1,-1,1,-1];
+    xOffsets = [1,1,-1,-1];
+    yOffsets = [1,-1,1,-1];
   } else if (piece.isAlly) {
-    var xOffsets = [1,-1];
-    var yOffsets = [-1,-1];
+    xOffsets = [1,-1];
+    yOffsets = [-1,-1];
   } else if (!piece.isAlly) {
-    var xOffsets = [1,-1];
-    var yOffsets = [1,1];
+    xOffsets = [1,-1];
+    yOffsets = [1,1];
   }
   var moves = [];
 
@@ -80,6 +80,8 @@ function makeFullMove(moves) {
     var x = move.srcX;
     var y = move.srcY;
     if (isValid(x,y) && board[x][y]){
+
+      // TODO this is probably not what you wanted to do
       if (possibleSubMoves(board[x][y].filter(move.equals))){
         // Valid move
         last = move;
@@ -126,7 +128,7 @@ function getMiddle(move){
   return {
     x: (move.destX - move.srcX)/2 + move.srcX,
     y: (move.destY - move.srcY)/2 + move.srcY
-  }
+  };
 }
 
 function makeEnemyMove(moves) {
