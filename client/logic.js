@@ -1,10 +1,9 @@
-var board;
 var BOARD_SIZE = 8;
 var NUM_ROWS = 3;
 
 function initialize(){
-  for (int i = 0; i < BOARD_SIZE; i++){
-    for (int j = 0; j < NUM_ROWS; j++){
+  for (var i = 0; i < BOARD_SIZE; i++){
+    for (var j = 0; j < NUM_ROWS; j++){
       var enemy = new Piece();
       enemy.ally = false;
       enemy.x = ((i+1)%2) + ~~(i/2);
@@ -20,13 +19,13 @@ function initialize(){
 }
 
 function makeMove(move) {
-  
+
 }
 
 function makeEnemyMove() {
-  
+
 }
 
 function possibleMoves() {
-  
+
 }
