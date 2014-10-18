@@ -15,6 +15,6 @@ app.use(bodyParser.json());       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({extended: true}));
 
 http.createServer(app).listen(process.env.PORT || 3000, function() {
-  console.log("HTTP server running on port", 80);
+  console.log("HTTP server running on port", process.env.PORT || 3000);
 });
 
