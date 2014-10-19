@@ -80,9 +80,7 @@ function makeFullMove(moves) {
     var x = move.srcX;
     var y = move.srcY;
     if (isValid(x,y) && board[x][y]){
-
-      // TODO this is probably not what you wanted to do
-      if (possibleSubMoves(board[x][y].filter(move.equals))){
+      if (_.where(possibleSubMoves(board[x][y]), move).length > 0){
         // Valid move
         last = move;
         p = board[x][y];
