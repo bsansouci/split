@@ -32,7 +32,7 @@ function reverseMove(move){
 
 // This function sets isFinal correctly for 1 submove turns, but
 // if there are jumps, the final one needs to be manually set.
-function possibleSubMoves(piece, inProgress) {
+function possibleSubMoves(piece, history) {
   var xOffsets;
   var yOffsets;
   if (piece.isKing){
@@ -54,7 +54,7 @@ function possibleSubMoves(piece, inProgress) {
     if (!isValid(x,y)){
       continue;
     }
-    if (inProgress || board[x][y]){
+    if (history.length > 0 || board[x][y]){
       x += xOffsets[i];
       y += yOffsets[i];
       isFinal = false;
@@ -68,7 +68,9 @@ function possibleSubMoves(piece, inProgress) {
     m.destX = x;
     m.destY = y;
     m.isFinal = isFinal;
-    moves.push(m);
+    if (_.where(history, m).length === 0){
+      moves.push(m);
+    }
   }
   return moves;
 }
@@ -76,11 +78,13 @@ function possibleSubMoves(piece, inProgress) {
 function makeFullMove(moves) {
   var last;
   var failure = false;
+  committedMoves = [];
+
   for (var move in moves){
     var x = move.srcX;
     var y = move.srcY;
     if (isValid(x,y) && board[x][y]){
-      if (_.where(possibleSubMoves(board[x][y]), move).length > 0){
+      if (_.where(possibleSubMoves(board[x][y], committedMoves), move).length > 0){
         // Valid move
         last = move;
         p = board[x][y];
@@ -88,6 +92,7 @@ function makeFullMove(moves) {
         p.y = move.destY;
         board[p.x][p.y] = p;
         board[x][y] = null;
+        committedMoves.push(move);
       } else {
         failure = true;
         break;
