@@ -115,11 +115,13 @@ function makeFullMove(moves) {
     for (move in moves){
       mid = getMiddle(move);
       if (!board[mid.x][mid.y].ally){
+        move.captures = true;
         pieceCaptured(board[mid.x][mid.y]);
         board[mid.x][mid.y] = null;
       }
     }
   }
+  return moves;
 }
 
 function pieceCaptured(piece){
@@ -136,6 +138,6 @@ function getMiddle(move){
 
 function makeEnemyMove(moves) {
   moves.map(reverseMove);
-  makeFullMove(moves);
+  return makeFullMove(moves);
 }
 
