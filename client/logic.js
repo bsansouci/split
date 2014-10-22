@@ -1,6 +1,3 @@
-var BOARD_SIZE = 8;
-var NUM_ROWS = 3;
-
 function initialize(){
   for (var i = 0; i < BOARD_SIZE/2; i++){
     for (var j = 0; j < NUM_ROWS; j++){

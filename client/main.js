@@ -3,11 +3,14 @@ var game = new Phaser.Game(800, 600, Phaser.AUTO, 'checkers', { preload: preload
 var board;
 var scale = 75;
 var spriteScale = 0.4
+var BOARD_SIZE = 8;
+var NUM_ROWS = 3;
+
 
 function preload() {
-  board = new Array(8);
+  board = new Array(BOARD_SIZE);
   for (var i = board.length - 1; i >= 0; i--) {
-    board[i] = new Array(8);
+    board[i] = new Array(BOARD_SIZE);
   }
 
   initialize();
@@ -34,6 +37,9 @@ function drawPieces() {
 }
 
 function drawBoard(graphics) {
+  graphics.beginFill(0x181818);
+  graphics.lineStyle(5, 0xffd900, 1);
+  graphics.drawRect(0, 0, scale*BOARD_SIZE, scale*BOARD_SIZE);
   graphics.beginFill(0xFF3300);
   graphics.lineStyle(5, 0xffd900, 1);
   for (var i = 0; i < BOARD_SIZE/2; i++) {
@@ -41,11 +47,10 @@ function drawBoard(graphics) {
       graphics.drawRect((j%2 + i*2)*scale, j*scale, scale, scale);
     }
   }
-  graphics.beginFill(0x181818);
   //graphics.lineStyle(5, 0x181818, 1);
-  for (var i = 0; i < BOARD_SIZE/2; i++) {
-    for (var j = 0; j < BOARD_SIZE; j++) {
-      graphics.drawRect(((1-j%2) + i*2)*scale, j*scale, scale, scale);
-    }
-  }
+  //for (var i = 0; i < BOARD_SIZE/2; i++) {
+  //  for (var j = 0; j < BOARD_SIZE; j++) {
+  //    graphics.drawRect(((1-j%2) + i*2)*scale, j*scale, scale, scale);
+  //  }
+  //}
 }
