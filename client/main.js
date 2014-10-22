@@ -47,10 +47,4 @@ function drawBoard(graphics) {
       graphics.drawRect((j%2 + i*2)*scale, j*scale, scale, scale);
     }
   }
-  //graphics.lineStyle(5, 0x181818, 1);
-  //for (var i = 0; i < BOARD_SIZE/2; i++) {
-  //  for (var j = 0; j < BOARD_SIZE; j++) {
-  //    graphics.drawRect(((1-j%2) + i*2)*scale, j*scale, scale, scale);
-  //  }
-  //}
 }
