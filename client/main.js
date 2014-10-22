@@ -2,6 +2,8 @@ var game = new Phaser.Game(800, 600, Phaser.AUTO, 'checkers', { preload: preload
 
 var board;
 var scale = 75;
+var spriteScale = 0.4
+
 function preload() {
   board = new Array(8);
   for (var i = board.length - 1; i >= 0; i--) {
@@ -15,6 +17,8 @@ function preload() {
 }
 
 function create() {
+  var graphics = game.add.graphics(0, 0);
+  drawBoard(graphics);
   drawPieces();
 }
 
@@ -23,15 +27,25 @@ function drawPieces() {
     for (var j = 0; j < board[i].length; j++) {
       if(board[i][j]) {
         var sprite = game.add.sprite(board[i][j].x * scale, board[i][j].y * scale, board[i][j].ally ? 'red-piece' : 'black-piece');
-        sprite.scale.setTo(0.4, 0.4);
+        sprite.scale.setTo(spriteScale, spriteScale);
       }
     }
   }
 }
 
-function drawBoard(argument) {
-  // for (var i = 0; i < BOARD_SIZE; i++) {
-  //   Things[i]
-  // };
-  // line1 = new Phaser.Line(handle1.x, handle1.y, handle2.x, handle2.y);
+function drawBoard(graphics) {
+  graphics.beginFill(0xFF3300);
+  graphics.lineStyle(5, 0xffd900, 1);
+  for (var i = 0; i < BOARD_SIZE/2; i++) {
+    for (var j = 0; j < BOARD_SIZE; j++) {
+      graphics.drawRect((j%2 + i*2)*scale, j*scale, scale, scale);
+    }
+  }
+  graphics.beginFill(0x181818);
+  //graphics.lineStyle(5, 0x181818, 1);
+  for (var i = 0; i < BOARD_SIZE/2; i++) {
+    for (var j = 0; j < BOARD_SIZE; j++) {
+      graphics.drawRect(((1-j%2) + i*2)*scale, j*scale, scale, scale);
+    }
+  }
 }
