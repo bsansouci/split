@@ -1,11 +1,11 @@
-var Move = function() {
+var Move = function(srcX, srcY, destX, destY, isFinal, captures) {
   var obj = {
-    srcX: 0,
-    srcY: 0,
-    destX: 0,
-    destY: 0,
-    isFinal: true,
-    captures: false
+    srcX: srcX || 0,
+    srcY: srcY || 0,
+    destX: destX || 0,
+    destY: destY || 0,
+    isFinal: isFinal || true,
+    captures: captures || false
   };
   return obj;
 };

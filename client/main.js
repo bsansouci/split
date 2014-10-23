@@ -47,12 +47,17 @@ function clicked(x, y, graphics, sprite) {
   graphics.drawRect(sprite.position.x, sprite.position.y, sprite.texture.width * sprite.scale.x, sprite.texture.height * sprite.scale.y);
 
   var possibleMoves = possibleSubMoves(board[x][y], []);
-  console.log(possibleMoves);
+  // possibleMoves = [
+  //   new Move(x, y, x, y - 1),
+  //   new Move(x, y, x - 1, y - 1),
+  //   new Move(x, y, x + 1, y - 1)
+  // ];
+  // console.log(x, y);
   for (var i = 0; i < possibleMoves.length; i++) {
     graphics.beginFill(0x181818);
     graphics.lineStyle(5, 0x00d9ff, 1);
     var m = possibleMoves[i];
-    graphics.drawRect(m.destX * scale, m.destY * scale, sprite.texture.width * scale, sprite.texture.height * scale);
+    graphics.drawRect(m.destX * scale, m.destY * scale, sprite.texture.width * spriteScale, sprite.texture.height * spriteScale);
   }
 }
 

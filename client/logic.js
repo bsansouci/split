@@ -30,6 +30,8 @@ function reverseMove(move){
 // This function sets isFinal correctly for 1 submove turns, but
 // if there are jumps, the final one needs to be manually set.
 function possibleSubMoves(piece, history) {
+  if(!piece) return [];
+
   var xOffsets;
   var yOffsets;
   if (piece.isKing){
@@ -58,6 +60,7 @@ function possibleSubMoves(piece, history) {
         continue;
       }
     }
+
     var m = new Move();
     m.srcX = piece.x;
     m.srcY = piece.y;
