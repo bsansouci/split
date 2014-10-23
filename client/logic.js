@@ -43,7 +43,6 @@ function possibleSubMoves(piece, history) {
     yOffsets = [1,1];
   }
   var moves = [];
-
   for (var i = 0; i < xOffsets.length; i++){
     var isFinal = true;
     var x = piece.x + xOffsets[i];
