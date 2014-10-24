@@ -2,7 +2,6 @@
   g.game = new Phaser.Game(800, 600, Phaser.AUTO, 'checkers', { preload: preload, create: create });
 
   function preload() {
-    console.log(logic);
     logic.initialize();
 
     g.game.load.image('red-piece', 'assets/pics/red-piece.png');
@@ -33,20 +32,58 @@
 
   function anyClick(graphics, pointer) {
     var pos = getBoardPos(pointer);
-    if(g.board[pos.x][pos.y]) return clickedOnPiece(pos.x, pos.y, graphics);
+    switch(g.state) {
+      case g.GameState.NEW_MOVE:
+        g.state = g.GameState.CONTINUE;
+        if(g.board[pos.x][pos.y]) return clickedOnPiece(pos.x, pos.y, graphics);
+        break;
+      case g.GameState.CONTINUE:
+//        if (g.board[pos.x][pos.y]){
+//          // Placeholder to end moves
+//          g.state = g.GameState.NEW_MOVE;
+//          g.history = [];
+//          break;
+//        }
+        var p = {destX: pos.x, destY: pos.y};
+        var move = _.where(g.currentPossibleMoves, p)[0];
 
-    var move = _.where(g.currentPossibleMoves, {destX: pos.x, destY: pos.y})[0];
-    if(!move) return;
+        if(!move && g.moveHistory.length === 0) return cancelMove(graphics);
+        else if (!move) return;
 
-    g.currentPossibleMoves = [];
-    drawBoard(graphics);
-    drawMove(move);
-    updateBoard(move);
+        g.moveHistory.push(move);
+        drawMove(move);
+        updateBoard(move);
+        if (!move.isFinal){
+          clickedOnPiece(pos.x, pos.y, graphics);
+        } else {
+          drawBoard(graphics);
+          g.state = g.GameState.NEW_MOVE;
+          submitMove();
+        }
+        break;
+      case g.GameState.WAITING:
+        // Placeholder for enemy's move
+        break;
+    }
+
   }
-  function getBoardPos(obj) {
+
+  function cancelMove(graphics){
+    g.currentPossibleMoves = [];
+    g.state = g.GameState.NEW_MOVE;
+    g.moveHistory = [];
+    drawBoard(graphics);
+  }
+
+  function submitMove(){
+    g.currentPossibleMoves = [];
+    g.moveHistory = [];
+  }
+
+  function getBoardPos(pointer) {
     return {
-      x: ~~(obj.x / g.GAME_SCALE),
-      y: ~~(obj.y / g.GAME_SCALE)
+      x: ~~(pointer.x / g.GAME_SCALE),
+      y: ~~(pointer.y / g.GAME_SCALE)
     };
   }
 

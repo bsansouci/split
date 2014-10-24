@@ -60,11 +60,27 @@ var logic = (function(g) {
 
       if (!isValid(x,y))  continue;
 
+
       if (g.moveHistory.length > 0 || g.board[x][y]){
+        if (!g.board[x][y]) continue;
         x += xOffsets[i];
         y += yOffsets[i];
-        isFinal = false;
         if (!isValid(x,y) || g.board[x][y]) continue;
+
+        // Check if next state has valid moves
+        var srcPt = {x: piece.x, y: piece.y};
+        var destPt = {x: x, y: y};
+        movePiece(srcPt, destPt);
+        var historyHack = (g.moveHistory.length === 0);
+        if (historyHack){
+          g.moveHistory.push("");
+        }
+        isFinal = (possibleSubMoves(piece).length === 0);
+        if (historyHack){
+          g.moveHistory.pop();
+        }
+        movePiece(destPt, srcPt);
+
       }
 
       var m = new Move();
@@ -80,6 +96,13 @@ var logic = (function(g) {
     }
     return moves;
   };
+
+  this.movePiece = function(src, dest) {
+    g.board[dest.x][dest.y] = g.board[src.x][src.y];
+    g.board[src.x][src.y] = null;
+    g.board[dest.x][dest.y].x = dest.x;
+    g.board[dest.x][dest.y].y = dest.y;
+  }
 
   this.makeFullMove = function(moves) {
     var last;
