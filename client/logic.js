@@ -2,7 +2,7 @@ function initialize(){
   for (var i = 0; i < BOARD_SIZE/2; i++){
     for (var j = 0; j < NUM_ROWS; j++){
       var enemy = new Piece();
-      enemy.ally = false;
+      enemy.isAlly = false;
       enemy.x = ((j+1)%2) + ~~(i*2);
       enemy.y = j;
       board[enemy.x][enemy.y] = enemy;
@@ -13,6 +13,14 @@ function initialize(){
       board[ally.x][ally.y] = ally;
     }
   }
+}
+
+function updateBoard(move) {
+  //TODO capture enemy
+  board[move.srcX][move.srcY].x = move.destX;
+  board[move.srcX][move.srcY].y = move.destY;
+  board[move.destX][move.destY] = board[move.srcX][move.srcY];
+  board[move.srcX][move.srcY] = null;
 }
 
 function isValid(x, y) {
@@ -29,17 +37,17 @@ function reverseMove(move){
 
 // This function sets isFinal correctly for 1 submove turns, but
 // if there are jumps, the final one needs to be manually set.
-function possibleSubMoves(piece, history) {
+function possibleSubMoves(piece) {
   if(!piece) return [];
   var xOffsets;
   var yOffsets;
   if (piece.isKing){
     xOffsets = [1,1,-1,-1];
     yOffsets = [1,-1,1,-1];
-  } else if (piece.ally) {
+  } else if (piece.isAlly) {
     xOffsets = [1,-1];
     yOffsets = [-1,-1];
-  } else if (!piece.ally) {
+  } else if (!piece.isAlly) {
     xOffsets = [1,-1];
     yOffsets = [1,1];
   }
@@ -48,16 +56,14 @@ function possibleSubMoves(piece, history) {
     var isFinal = true;
     var x = piece.x + xOffsets[i];
     var y = piece.y + yOffsets[i];
-    if (!isValid(x,y)){
-      continue;
-    }
+
+    if (!isValid(x,y))  continue;
+
     if (history.length > 0 || board[x][y]){
       x += xOffsets[i];
       y += yOffsets[i];
       isFinal = false;
-      if (!isValid(x,y) || board[x][y]){
-        continue;
-      }
+      if (!isValid(x,y) || board[x][y]) continue;
     }
 
     var m = new Move();
@@ -66,6 +72,7 @@ function possibleSubMoves(piece, history) {
     m.destX = x;
     m.destY = y;
     m.isFinal = isFinal;
+
     if (_.where(history, m).length === 0){
       moves.push(m);
     }
@@ -112,7 +119,7 @@ function makeFullMove(moves) {
     // Remove jumped pieces
     for (move in moves){
       mid = getMiddle(move);
-      if (!board[mid.x][mid.y].ally){
+      if (!board[mid.x][mid.y].isAlly){
         move.captures = true;
         pieceCaptured(board[mid.x][mid.y]);
         board[mid.x][mid.y] = null;

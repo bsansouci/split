@@ -1,18 +1,22 @@
 var game = new Phaser.Game(800, 600, Phaser.AUTO, 'checkers', { preload: preload, create: create });
 
-var board;
-var scale = 75;
-var spriteScale = 0.4;
+var GAME_SCALE = 75;
+var SPRITE_SCALE = 0.4;
 var BOARD_SIZE = 8;
 var NUM_ROWS = 3;
+var GameState = {
+  CREATE_MOVE: "createmove"
+};
 
+var board = new Array(BOARD_SIZE);
+for (var i = board.length - 1; i >= 0; i--) {
+  board[i] = new Array(BOARD_SIZE);
+}
+var history = [];
+var currentPossibleMoves = [];
+var state = GameState.CREATE_MOVE;
 
 function preload() {
-  board = new Array(BOARD_SIZE);
-  for (var i = board.length - 1; i >= 0; i--) {
-    board[i] = new Array(BOARD_SIZE);
-  }
-
   initialize();
 
   game.load.image('red-piece', 'assets/pics/red-piece.png');
@@ -23,53 +27,72 @@ function create() {
   var graphics = game.add.graphics(0, 0);
   drawBoard(graphics);
   drawPieces(graphics);
+  game.input.onDown.add(_.partial(anyClick, graphics), this);
 }
 
 function drawPieces(graphics) {
   for (var i = 0; i < board.length; i++) {
     for (var j = 0; j < board[i].length; j++) {
       if(board[i][j]) {
-        var sprite = game.add.sprite(board[i][j].x * scale, board[i][j].y * scale, board[i][j].ally ? 'red-piece' : 'black-piece');
-        sprite.scale.setTo(spriteScale, spriteScale);
-        if(board[i][j].ally) {
+        var sprite = game.add.sprite(board[i][j].x * GAME_SCALE, board[i][j].y * GAME_SCALE, board[i][j].isAlly ? 'red-piece' : 'black-piece');
+        board[i][j].sprite = sprite;
+        sprite.scale.setTo(SPRITE_SCALE, SPRITE_SCALE);
+        if(board[i][j].isAlly) {
           sprite.inputEnabled = true;
-          sprite.events.onInputDown.add(_.partial(clicked, i, j, graphics), this);
         }
       }
     }
   }
 }
 
-function clicked(x, y, graphics, sprite) {
+function anyClick(graphics, pointer) {
+  var pos = getBoardPos(pointer);
+  if(board[pos.x][pos.y]) return clickedOnPiece(pos.x, pos.y, graphics);
+
+  var move = _.where(currentPossibleMoves, {destX: pos.x, destY: pos.y})[0];
+  if(!move) return;
+
+  drawMove(move);
+  updateBoard(move);
+  currentPossibleMoves =  [];
+}
+function getBoardPos(obj) {
+  return {
+    x: ~~(obj.x / GAME_SCALE),
+    y: ~~(obj.y / GAME_SCALE)
+  };
+}
+
+function clickedOnPiece(x, y, graphics) {
   drawBoard(graphics);
   graphics.beginFill(0x181818);
   graphics.lineStyle(5, 0x00d9ff, 1);
-  graphics.drawRect(sprite.position.x, sprite.position.y, sprite.texture.width * sprite.scale.x, sprite.texture.height * sprite.scale.y);
+  graphics.drawRect(x * GAME_SCALE, y * GAME_SCALE, GAME_SCALE, GAME_SCALE);
 
   var possibleMoves = possibleSubMoves(board[x][y], []);
-  // possibleMoves = [
-  //   new Move(x, y, x, y - 1),
-  //   new Move(x, y, x - 1, y - 1),
-  //   new Move(x, y, x + 1, y - 1)
-  // ];
-  // console.log(x, y);
+
   for (var i = 0; i < possibleMoves.length; i++) {
     graphics.beginFill(0x181818);
     graphics.lineStyle(5, 0x00d9ff, 1);
     var m = possibleMoves[i];
-    graphics.drawRect(m.destX * scale, m.destY * scale, sprite.texture.width * spriteScale, sprite.texture.height * spriteScale);
+    graphics.drawRect(m.destX * GAME_SCALE, m.destY * GAME_SCALE, GAME_SCALE, GAME_SCALE);
   }
+  currentPossibleMoves = possibleMoves;
+}
+
+function drawMove(move) {
+  game.add.tween(board[move.srcX][move.srcY].sprite.position).to({x: move.destX * GAME_SCALE, y: move.destY * GAME_SCALE}, 2000, Phaser.Easing.Bounce.Out, true);
 }
 
 function drawBoard(graphics) {
   graphics.beginFill(0x181818);
   graphics.lineStyle(5, 0xffd900, 1);
-  graphics.drawRect(0, 0, scale*BOARD_SIZE, scale*BOARD_SIZE);
+  graphics.drawRect(0, 0, GAME_SCALE*BOARD_SIZE, GAME_SCALE*BOARD_SIZE);
   graphics.beginFill(0xFF3300);
   graphics.lineStyle(5, 0xffd900, 1);
   for (var i = 0; i < BOARD_SIZE/2; i++) {
     for (var j = 0; j < BOARD_SIZE; j++) {
-      graphics.drawRect((j%2 + i*2)*scale, j*scale, scale, scale);
+      graphics.drawRect((j%2 + i*2)*GAME_SCALE, j*GAME_SCALE, GAME_SCALE, GAME_SCALE);
     }
   }
 }

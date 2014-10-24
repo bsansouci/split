@@ -2,9 +2,10 @@ var Piece = function() {
   var obj = {
     x: 0,
     y: 0,
-    ally: true,
-    selected: false,
-    isKing: false
+    isAlly: true,
+    isSelected: false,
+    isKing: false,
+    sprite: null
   };
   return obj;
 };
