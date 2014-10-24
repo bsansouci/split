@@ -12,7 +12,7 @@ var board = new Array(BOARD_SIZE);
 for (var i = board.length - 1; i >= 0; i--) {
   board[i] = new Array(BOARD_SIZE);
 }
-var history = [];
+var moveHistory = [];
 var currentPossibleMoves = [];
 var state = GameState.CREATE_MOVE;
 

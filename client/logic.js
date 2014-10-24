@@ -59,7 +59,7 @@ function possibleSubMoves(piece) {
 
     if (!isValid(x,y))  continue;
 
-    if (history.length > 0 || board[x][y]){
+    if (moveHistory.length > 0 || board[x][y]){
       x += xOffsets[i];
       y += yOffsets[i];
       isFinal = false;
@@ -73,9 +73,9 @@ function possibleSubMoves(piece) {
     m.destY = y;
     m.isFinal = isFinal;
 
-    if (_.where(history, m).length === 0){
+//    if (_.where(moveHistory, m).length === 0){
       moves.push(m);
-    }
+//    }
   }
   return moves;
 }
