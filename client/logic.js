@@ -31,16 +31,15 @@ function reverseMove(move){
 // if there are jumps, the final one needs to be manually set.
 function possibleSubMoves(piece, history) {
   if(!piece) return [];
-
   var xOffsets;
   var yOffsets;
   if (piece.isKing){
     xOffsets = [1,1,-1,-1];
     yOffsets = [1,-1,1,-1];
-  } else if (piece.isAlly) {
+  } else if (piece.ally) {
     xOffsets = [1,-1];
     yOffsets = [-1,-1];
-  } else if (!piece.isAlly) {
+  } else if (!piece.ally) {
     xOffsets = [1,-1];
     yOffsets = [1,1];
   }
