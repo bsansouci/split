@@ -52,9 +52,10 @@ function anyClick(graphics, pointer) {
   var move = _.where(currentPossibleMoves, {destX: pos.x, destY: pos.y})[0];
   if(!move) return;
 
+  currentPossibleMoves = [];
+  drawBoard(graphics);
   drawMove(move);
   updateBoard(move);
-  currentPossibleMoves =  [];
 }
 function getBoardPos(obj) {
   return {
@@ -81,7 +82,8 @@ function clickedOnPiece(x, y, graphics) {
 }
 
 function drawMove(move) {
-  game.add.tween(board[move.srcX][move.srcY].sprite.position).to({x: move.destX * GAME_SCALE, y: move.destY * GAME_SCALE}, 2000, Phaser.Easing.Bounce.Out, true);
+  console.log(Phaser.Easing);
+  game.add.tween(board[move.srcX][move.srcY].sprite.position).to({x: move.destX * GAME_SCALE, y: move.destY * GAME_SCALE}, 1000, Phaser.Easing.Quadratic.Out, true);
 }
 
 function drawBoard(graphics) {
