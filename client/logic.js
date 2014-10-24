@@ -73,9 +73,9 @@ function possibleSubMoves(piece) {
     m.destY = y;
     m.isFinal = isFinal;
 
-//    if (_.where(moveHistory, m).length === 0){
+    if (_.where(moveHistory, m).length === 0){
       moves.push(m);
-//    }
+    }
   }
   return moves;
 }

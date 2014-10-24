@@ -82,7 +82,6 @@ function clickedOnPiece(x, y, graphics) {
 }
 
 function drawMove(move) {
-  console.log(Phaser.Easing);
   game.add.tween(board[move.srcX][move.srcY].sprite.position).to({x: move.destX * GAME_SCALE, y: move.destY * GAME_SCALE}, 1000, Phaser.Easing.Quadratic.Out, true);
 }
 
