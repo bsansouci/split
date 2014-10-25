@@ -1,4 +1,4 @@
-var otherPlay = (function() {
+var opponent = (function() {
   this.sendTurn = function() {
     var str = "";
     g.moveHistory.map(function(v) {
