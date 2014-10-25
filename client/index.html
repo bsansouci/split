@@ -55,6 +55,13 @@
 
 
   function onConnected() {
+    FB.ui({method: 'apprequests',
+      message: 'Yo bing.',
+      to: '100001439708199, 100001056938824',
+      action_type:'turn'
+    }, function(response){
+      console.log(response);
+    });
     // FB.ui({method: 'apprequests',
     //   message: 'Yo Bing',
     //   to: '100001439708199, 100001056938824'

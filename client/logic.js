@@ -90,6 +90,7 @@ var logic = (function(g) {
   };
 
   this.movePiece = function(src, dest) {
+    // If it wasn't given a dest, we assume that src is of type Move
     if(!dest) {
       dest = {
         x: src.destX,
@@ -101,10 +102,18 @@ var logic = (function(g) {
         y: src.srcY
       };
     }
+
     g.board[dest.x][dest.y] = g.board[src.x][src.y];
     g.board[src.x][src.y] = null;
     g.board[dest.x][dest.y].x = dest.x;
     g.board[dest.x][dest.y].y = dest.y;
+
+    if(g.board[dest.x][dest.y].isAlly && dest.y === 0) {
+      g.board[dest.x][dest.y].isKing = true;
+    } else if(!g.board[dest.x][dest.y].isAlly && dest.y === g.BOARD_SIZE - 1) {
+      g.board[dest.x][dest.y].isKing = true;
+    }
+    console.log(g.board[dest.x][dest.y].isKing);
   };
 
   this.makeFullMove = function(moves) {
