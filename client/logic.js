@@ -25,6 +25,7 @@ var logic = (function(g) {
     move.srcY = g.BOARD_SIZE - move.srcY;
     move.destX = g.BOARD_SIZE - move.destX;
     move.destY = g.BOARD_SIZE - move.destY;
+    return move;
   };
 
 
