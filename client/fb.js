@@ -1,4 +1,4 @@
-var opponent = (function() {
+var opponent = (function(g) {
   this.sendTurn = function() {
     var str = "";
     g.moveHistory.map(function(v) {
@@ -15,4 +15,4 @@ var opponent = (function() {
     });
   };
   return this;
-})();
+}).call(this, GLOBAL);
