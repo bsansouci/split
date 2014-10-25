@@ -58,10 +58,10 @@
   function onConnected(privateData) {
     var p = document.createElement('a');
     p.href = window.location.href;
-    var allGetElements = p.search.split("?");
+    var allGetElements = p.search.split("?")[1].split("&");
+
     var data = {};
     allGetElements.map(function(val) {
-      var data = {};
       var tmp = val.split("=");
       data[tmp[0]] = tmp[1];
     });
