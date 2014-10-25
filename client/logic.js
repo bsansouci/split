@@ -90,6 +90,17 @@ var logic = (function(g) {
   };
 
   this.movePiece = function(src, dest) {
+    if(!dest) {
+      dest = {
+        x: src.destX,
+        y: src.destY
+      };
+
+      src = {
+        x: src.srcX,
+        y: src.srcY
+      };
+    }
     g.board[dest.x][dest.y] = g.board[src.x][src.y];
     g.board[src.x][src.y] = null;
     g.board[dest.x][dest.y].x = dest.x;
