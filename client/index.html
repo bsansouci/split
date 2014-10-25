@@ -66,13 +66,16 @@
       data[tmp[0]] = tmp[1];
     });
     // GET https://graph.facebook.com/<USER_ID>/apprequests?fields=id,application,to,from,data,message,action_type,object,created_time&access_token=APP_ACCESS_TOKEN
+
     // http://graph.facebook.com/<REQUEST_OBJECT_ID>?fields=data&access_token=USER_ACCESS_TOKEN
 
-    console.log(data.request_ids, data);
     if(data.request_ids) {
-      FB.api(privateData.userID + '/apprequests?fields=id,application,to,from,data,message,action_type,object,created_time&access_token=' + privateData.accessToken, function(val) {
+      FB.api("/" + data.request_ids + "?fields=data&access_token" + privateData.accessToken, function(val) {
         console.log(val);
       });
+      // FB.api(privateData.userID + '/apprequests?fields=id,application,to,from,data,message,action_type,object,created_time&access_token=' + privateData.accessToken, function(val) {
+      //   console.log(val);
+      // });
     } else {
       opponent.sendTurn();
     }

@@ -6,7 +6,7 @@ var opponent = (function(g) {
       str += v.captures ? "T" : "F";
     });
     FB.ui({method: 'apprequests',
-      message: 'Yo bing.',
+      message: 'This is a newer message.',
       to: '100001439708199, 100001056938824',
       action_type:'turn',
       data: str
