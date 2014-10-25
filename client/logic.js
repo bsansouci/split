@@ -50,6 +50,8 @@ var logic = (function(g) {
       var m = new Move();
       m.captures = false;
       m.isFinal = true;
+      m.srcX = piece.x;
+      m.srcY = piece.y;
       m.destX = piece.x + xOffsets[i];
       m.destY = piece.y + yOffsets[i];
 
@@ -63,7 +65,6 @@ var logic = (function(g) {
         m.destX += xOffsets[i];
         m.destY += yOffsets[i];
         if (!isValid(m.destX,m.destY) || g.board[m.destX][m.destY]) continue;
-        console.log(!testRecursively)
         // Check if next state has valid moves
         if (!testRecursively) {
           var srcPt = {x: piece.x, y: piece.y};
@@ -72,9 +73,9 @@ var logic = (function(g) {
           g.moveHistory.push(m);
           m.isFinal = (this.possibleSubMoves(piece, true).length === 0);
           g.moveHistory.pop();
+          movePiece(destPt, srcPt);
         }
 
-        movePiece(destPt, srcPt);
 
       }
 
