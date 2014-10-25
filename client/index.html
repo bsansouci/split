@@ -22,10 +22,10 @@
 
     function onLogin(response) {
       if (response.status == 'connected') {
-        FB.api('/me?fields=first_name', function(data) {
+        FB.api('/me?fields=id', function(data) {
           // var welcomeBlock = document.getElementById('fb-welcome');
           // welcomeBlock.innerHTML = 'Hello, ' + data.first_name + '!';
-          onConnected();
+          onConnected(data);
         });
       }
     }
@@ -55,19 +55,17 @@
 
 
   function onConnected() {
-    FB.ui({method: 'apprequests',
-      message: 'Yo bing.',
-      to: '100001439708199, 100001056938824',
-      action_type:'turn'
-    }, function(response){
-      console.log(response);
+    var p = document.createElement('a');
+    p.href = window.location.href;
+    var allGetElements = p.search.split("?");
+    var data = {};
+    allGetElements.map(function(val) {
+      var data = {};
+      var tmp = val.split("=");
+      data[tmp[0]] = tmp[1];
     });
-    // FB.ui({method: 'apprequests',
-    //   message: 'Yo Bing',
-    //   to: '100001439708199, 100001056938824'
-    // }, function(response){
-    //   console.log(response);
-    // });
+    // GET https://graph.facebook.com/<USER_ID>/apprequests?fields=id,application,to,from,data,message,action_type,object,created_time&access_token=APP_ACCESS_TOKEN
+    console.log(data.request_ids, data);
   }
 </script>
 <h1 id="fb-welcome"></h1>
