@@ -16,14 +16,6 @@ var logic = (function(g) {
     }
   };
 
-  this.updateBoard = function(move) {
-    //TODO capture enemy
-    g.board[move.srcX][move.srcY].x = move.destX;
-    g.board[move.srcX][move.srcY].y = move.destY;
-    g.board[move.destX][move.destY] = g.board[move.srcX][move.srcY];
-    g.board[move.srcX][move.srcY] = null;
-  };
-
   this.isValid = function(x, y) {
     return (x >= 0 && y >= 0 && x < g.BOARD_SIZE && y < g.BOARD_SIZE);
   };
@@ -102,7 +94,7 @@ var logic = (function(g) {
     g.board[src.x][src.y] = null;
     g.board[dest.x][dest.y].x = dest.x;
     g.board[dest.x][dest.y].y = dest.y;
-  }
+  };
 
   this.makeFullMove = function(moves) {
     var last;
