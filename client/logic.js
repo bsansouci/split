@@ -16,14 +16,6 @@ var logic = (function(g) {
     }
   };
 
-  this.updateBoard = function(move) {
-    //TODO capture enemy
-    g.board[move.srcX][move.srcY].x = move.destX;
-    g.board[move.srcX][move.srcY].y = move.destY;
-    g.board[move.destX][move.destY] = g.board[move.srcX][move.srcY];
-    g.board[move.srcX][move.srcY] = null;
-  };
-
   this.isValid = function(x, y) {
     return (x >= 0 && y >= 0 && x < g.BOARD_SIZE && y < g.BOARD_SIZE);
   };
@@ -94,11 +86,31 @@ var logic = (function(g) {
   };
 
   this.movePiece = function(src, dest) {
+    // If it wasn't given a dest, we assume that src is of type Move
+    if(!dest) {
+      dest = {
+        x: src.destX,
+        y: src.destY
+      };
+
+      src = {
+        x: src.srcX,
+        y: src.srcY
+      };
+    }
+
     g.board[dest.x][dest.y] = g.board[src.x][src.y];
     g.board[src.x][src.y] = null;
     g.board[dest.x][dest.y].x = dest.x;
     g.board[dest.x][dest.y].y = dest.y;
-  }
+
+    if(g.board[dest.x][dest.y].isAlly && dest.y === 0) {
+      g.board[dest.x][dest.y].isKing = true;
+    } else if(!g.board[dest.x][dest.y].isAlly && dest.y === g.BOARD_SIZE - 1) {
+      g.board[dest.x][dest.y].isKing = true;
+    }
+    console.log(g.board[dest.x][dest.y].isKing);
+  };
 
   this.makeFullMove = function(moves) {
     var last;

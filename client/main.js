@@ -1,5 +1,5 @@
 (function(g) {
-  g.game = new Phaser.Game(800, 600, Phaser.AUTO, 'checkers', { preload: preload, create: create });
+  g.game = new Phaser.Game(600, 600, Phaser.AUTO, 'checkers', { preload: preload, create: create });
 
   function preload() {
     logic.initialize();
@@ -38,21 +38,17 @@
         if(g.board[pos.x][pos.y]) return clickedOnPiece(pos.x, pos.y, graphics);
         break;
       case g.GameState.CONTINUE:
-//        if (g.board[pos.x][pos.y]){
-//          // Placeholder to end moves
-//          g.state = g.GameState.NEW_MOVE;
-//          g.history = [];
-//          break;
-//        }
         var p = {destX: pos.x, destY: pos.y};
         var move = _.where(g.currentPossibleMoves, p)[0];
+
+        if(g.board[pos.x][pos.y]) return clickedOnPiece(pos.x, pos.y, graphics);
 
         if(!move && g.moveHistory.length === 0) return cancelMove(graphics);
         else if (!move) return;
 
         g.moveHistory.push(move);
         drawMove(move);
-        updateBoard(move);
+        logic.movePiece(move);
         if (!move.isFinal){
           clickedOnPiece(pos.x, pos.y, graphics);
         } else {
