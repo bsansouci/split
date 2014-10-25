@@ -54,11 +54,15 @@
           clickedOnPiece(pos.x, pos.y, graphics);
         } else {
           drawBoard(graphics);
-          g.state = g.GameState.NEW_MOVE;
+          g.state = g.GameState.WAITING;
+
+          opponent.sendTurn();
+
           submitMove();
         }
         break;
       case g.GameState.WAITING:
+
         // Placeholder for enemy's move
         break;
     }
