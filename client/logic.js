@@ -38,7 +38,8 @@ var logic = (function(g) {
 
   // This function sets isFinal correctly for 1 submove turns, but
   // if there are jumps, the final one needs to be manually set.
-  this.possibleSubMoves = function(piece) {
+  // 
+  this.possibleSubMoves = function(piece, testRecursively) {
     if(!piece) return [];
     var xOffsets;
     var yOffsets;
@@ -54,41 +55,36 @@ var logic = (function(g) {
     }
     var moves = [];
     for (var i = 0; i < xOffsets.length; i++){
-      var isFinal = true;
-      var x = piece.x + xOffsets[i];
-      var y = piece.y + yOffsets[i];
+      var m = new Move();
+      m.captures = false;
+      m.isFinal = true;
+      m.destX = piece.x + xOffsets[i];
+      m.destY = piece.y + yOffsets[i];
 
-      if (!isValid(x,y))  continue;
+      if (!isValid(m.destX,m.destY))  continue;
 
 
-      if (g.moveHistory.length > 0 || g.board[x][y]){
-        if (!g.board[x][y]) continue;
-        x += xOffsets[i];
-        y += yOffsets[i];
-        if (!isValid(x,y) || g.board[x][y]) continue;
+      if (g.moveHistory.length > 0 || g.board[m.destX][m.destY]){
+        if (!g.board[m.destX][m.destY]) continue;
 
+        m.captures = !g.board[m.destX][m.destY].isAlly
+        m.destX += xOffsets[i];
+        m.destY += yOffsets[i];
+        if (!isValid(m.destX,m.destY) || g.board[m.destX][m.destY]) continue;
+        console.log(!testRecursively)
         // Check if next state has valid moves
-        var srcPt = {x: piece.x, y: piece.y};
-        var destPt = {x: x, y: y};
-        movePiece(srcPt, destPt);
-        var historyHack = (g.moveHistory.length === 0);
-        if (historyHack){
-          g.moveHistory.push("");
-        }
-        isFinal = (possibleSubMoves(piece).length === 0);
-        if (historyHack){
+        if (!testRecursively) {
+          var srcPt = {x: piece.x, y: piece.y};
+          var destPt = {x: m.destX, y: m.destY};
+          movePiece(srcPt, destPt);
+          g.moveHistory.push(m);
+          m.isFinal = (this.possibleSubMoves(piece, true).length === 0);
           g.moveHistory.pop();
         }
+
         movePiece(destPt, srcPt);
 
       }
-
-      var m = new Move();
-      m.srcX = piece.x;
-      m.srcY = piece.y;
-      m.destX = x;
-      m.destY = y;
-      m.isFinal = isFinal;
 
       if (_.where(g.moveHistory, m).length === 0){
         moves.push(m);
