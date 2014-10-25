@@ -193,7 +193,7 @@ var logic = (function(g) {
     };
   };
 
-  this.makeEnemyMove = function(moves) {
+  this.makeEnemyMoves = function(moves) {
     moves.map(reverseMove);
     return makeFullMove(moves);
   };

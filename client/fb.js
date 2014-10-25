@@ -44,8 +44,12 @@ var opponent = (function(g) {
     });
   };
 
-  this.parseAndClear = function(ob) {
-
+  this.parseAndClear = function(obj) {
+    console.log(obj);
+    var arr = decrypt(obj.data);
+    console.log(arr);
+    logic.makeEnemyMoves(arr);
+    this.clearEvent(obj.id);
   };
 
   this.clearEvent = function(requestId) {
