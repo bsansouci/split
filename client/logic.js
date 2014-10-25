@@ -171,9 +171,9 @@ var logic = (function(g) {
     for (var i = g.BOARD_SIZE - 1; i >= 0; i--) {
       for (var j = g.BOARD_SIZE- 1; j >= 0; j--) {
         if (!enemyWon && !allyWon) return;
-        var piece = g.board[i][j];
-        if(piece) {
-          if (piece.isAlly) {
+        var p = g.board[i][j];
+        if(p) {
+          if (p.isAlly) {
             enemyWon = false;
           } else {
             allyWon = false;
@@ -194,8 +194,7 @@ var logic = (function(g) {
   };
 
   this.makeEnemyMoves = function(moves) {
-    moves.map(reverseMove);
-    return makeFullMove(moves);
+    moves.map(reverseMove).map(movePiece);
   };
 
   return this;
