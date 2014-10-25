@@ -22,11 +22,13 @@
 
     function onLogin(response) {
       if (response.status == 'connected') {
-        FB.api('/me?fields=id', function(data) {
+        var access_token =   FB.getAuthResponse().accessToken;
+        console.log(FB.getAuthResponse());
+        // FB.api('/me?fields=id', function(data) {
           // var welcomeBlock = document.getElementById('fb-welcome');
           // welcomeBlock.innerHTML = 'Hello, ' + data.first_name + '!';
-          onConnected(data);
-        });
+          onConnected(access_token);
+        // });
       }
     }
 
@@ -54,7 +56,7 @@
    }(document, 'script', 'facebook-jssdk'));
 
 
-  function onConnected() {
+  function onConnected(access_token) {
     var p = document.createElement('a');
     p.href = window.location.href;
     var allGetElements = p.search.split("?");
@@ -65,7 +67,12 @@
       data[tmp[0]] = tmp[1];
     });
     // GET https://graph.facebook.com/<USER_ID>/apprequests?fields=id,application,to,from,data,message,action_type,object,created_time&access_token=APP_ACCESS_TOKEN
+    // http://graph.facebook.com/<REQUEST_OBJECT_ID>?fields=data&access_token=USER_ACCESS_TOKEN
+
     console.log(data.request_ids, data);
+    if(data.request_ids) {
+      FB.api('/' + data.request_ids + '?fields=data&access_token=' + access_token);
+    }
   }
 </script>
 <h1 id="fb-welcome"></h1>
