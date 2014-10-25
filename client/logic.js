@@ -28,10 +28,8 @@ var logic = (function(g) {
   };
 
 
-  // This function sets isFinal correctly for 1 submove turns, but
-  // if there are jumps, the final one needs to be manually set.
-  // 
-  this.possibleSubMoves = function(piece, testRecursively) {
+// testLoval should not be specified.
+  this.possibleSubMoves = function(piece, testLocal) {
     if(!piece) return [];
     var xOffsets;
     var yOffsets;
@@ -60,20 +58,27 @@ var logic = (function(g) {
 
       if (g.moveHistory.length > 0 || g.board[m.destX][m.destY]){
         if (!g.board[m.destX][m.destY]) continue;
+        var lastMove = g.moveHistory[g.moveHistory.length-1];
 
-        m.captures = !g.board[m.destX][m.destY].isAlly
+        m.captures = g.board[m.destX][m.destY].isAlly !== piece.isAlly;
         m.destX += xOffsets[i];
         m.destY += yOffsets[i];
+
+        if (lastMove && lastMove.srcX === m.destX && lastMove.srcY === m.destY) continue;
         if (!isValid(m.destX,m.destY) || g.board[m.destX][m.destY]) continue;
         // Check if next state has valid moves
-        if (!testRecursively) {
+        if (!testLocal) {
+          var isKing = piece.isKing;
           var srcPt = {x: piece.x, y: piece.y};
           var destPt = {x: m.destX, y: m.destY};
           movePiece(srcPt, destPt);
           g.moveHistory.push(m);
-          m.isFinal = (this.possibleSubMoves(piece, true).length === 0);
+          piece.isKing = isKing;
+          m.isFinal = (possibleSubMoves(piece, true).length === 0);
           g.moveHistory.pop();
           movePiece(destPt, srcPt);
+        } else {
+          m.isFinal = false;
         }
 
 
@@ -110,7 +115,6 @@ var logic = (function(g) {
     } else if(!g.board[dest.x][dest.y].isAlly && dest.y === g.BOARD_SIZE - 1) {
       g.board[dest.x][dest.y].isKing = true;
     }
-    console.log(g.board[dest.x][dest.y].isKing);
   };
 
   this.makeFullMove = function(moves) {
@@ -153,9 +157,7 @@ var logic = (function(g) {
       for (move in moves){
         mid = getMiddle(move);
         if (!g.board[mid.x][mid.y].isAlly){
-          move.captures = true;
           pieceCaptured(g.board[mid.x][mid.y]);
-          g.board[mid.x][mid.y] = null;
         }
       }
     }
@@ -164,6 +166,26 @@ var logic = (function(g) {
 
   this.pieceCaptured = function(piece){
     // TODO: Just in case we want some action here...
+    g.board[piece.x][piece.y] = null;
+    var enemyWon = true;
+    var allyWon = true;
+
+    for (var i = g.BOARD_SIZE - 1; i >= 0; i--) {
+      for (var j = g.BOARD_SIZE- 1; j >= 0; j--) {
+        if (!enemyWon && !allyWon) return;
+        var piece = g.board[i][j];
+        if(piece) {
+          if (piece.isAlly) {
+            enemyWon = false;
+          } else {
+            allyWon = false;
+          }
+        }
+      }
+        if (enemyWon) g.state = g.GameState.LOST;
+        else g.state = g.GameState.WON;
+    }
+
     return;
   };
 

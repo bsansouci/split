@@ -32,6 +32,7 @@
 
   function anyClick(graphics, pointer) {
     var pos = getBoardPos(pointer);
+    console.log("State: ", g.state, " Pos: ", pos, "currentPossibleMoves", g.currentPossibleMoves);
     switch(g.state) {
       case g.GameState.NEW_MOVE:
         g.state = g.GameState.CONTINUE;
@@ -89,7 +90,7 @@
     graphics.lineStyle(5, 0x00d9ff, 1);
     graphics.drawRect(x * g.GAME_SCALE, y * g.GAME_SCALE, g.GAME_SCALE, g.GAME_SCALE);
 
-    var possibleMoves = possibleSubMoves(g.board[x][y], []);
+    var possibleMoves = possibleSubMoves(g.board[x][y]);
 
     for (var i = 0; i < possibleMoves.length; i++) {
       graphics.beginFill(0x181818);
@@ -103,6 +104,12 @@
   function drawMove(move) {
     g.board[move.srcX][move.srcY].sprite.bringToTop();
     g.game.add.tween(g.board[move.srcX][move.srcY].sprite.position).to({x: move.destX * g.GAME_SCALE, y: move.destY * g.GAME_SCALE}, 1000, Phaser.Easing.Quadratic.Out, true);
+    if (move.captures) {
+      var mid = getMiddle(move);
+      var capture = g.board[mid.x][mid.y];
+      capture.sprite.destroy();
+      pieceCaptured(capture);
+    }
   }
 
   function drawBoard(graphics) {

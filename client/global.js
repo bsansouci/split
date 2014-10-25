@@ -7,7 +7,9 @@ var GLOBAL = (function() {
     GameState: {
       NEW_MOVE: "newMove",
       CONTINUE: "continue",
-      WAITING: "waiting"
+      WAITING: "waiting",
+      LOST: "lost",
+      WON: "won"
     },
     moveHistory: [],
     currentPossibleMoves: [],
