@@ -164,7 +164,6 @@ var logic = (function(g) {
   };
 
   this.pieceCaptured = function(piece){
-    // TODO: Just in case we want some action here...
     g.board[piece.x][piece.y] = null;
     var enemyWon = true;
     var allyWon = true;
@@ -181,10 +180,9 @@ var logic = (function(g) {
           }
         }
       }
-        if (enemyWon) g.state = g.GameState.LOST;
-        else g.state = g.GameState.WON;
     }
-
+    if (enemyWon) g.state = g.GameState.LOST;
+    else g.state = g.GameState.WON;
     return;
   };
 
