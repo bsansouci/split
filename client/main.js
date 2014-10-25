@@ -41,6 +41,8 @@
         var p = {destX: pos.x, destY: pos.y};
         var move = _.where(g.currentPossibleMoves, p)[0];
 
+        if(g.board[pos.x][pos.y]) return clickedOnPiece(pos.x, pos.y, graphics);
+
         if(!move && g.moveHistory.length === 0) return cancelMove(graphics);
         else if (!move) return;
 
