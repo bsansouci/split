@@ -28,7 +28,7 @@ var logic = (function(g) {
   };
 
 
-// testLoval should not be specified.
+// testLocal should not be specified.
   this.possibleSubMoves = function(piece, testLocal) {
     if(!piece) return [];
     var xOffsets;
@@ -54,7 +54,6 @@ var logic = (function(g) {
       m.destY = piece.y + yOffsets[i];
 
       if (!isValid(m.destX,m.destY))  continue;
-
 
       if (g.moveHistory.length > 0 || g.board[m.destX][m.destY]){
         if (!g.board[m.destX][m.destY]) continue;

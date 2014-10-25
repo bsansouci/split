@@ -9,6 +9,7 @@
 <script type="text/javascript" src="logic.js"></script>
 <script type="text/javascript" src="move.js"></script>
 <script type="text/javascript" src="main.js"></script>
+<script type="text/javascript" src="fb.js"></script>
   <title></title>
 </head>
 <body>
@@ -22,11 +23,11 @@
 
     function onLogin(response) {
       if (response.status == 'connected') {
-        FB.api('/me?fields=first_name', function(data) {
+        // FB.api('/me?fields=id', function(data) {
           // var welcomeBlock = document.getElementById('fb-welcome');
           // welcomeBlock.innerHTML = 'Hello, ' + data.first_name + '!';
-          onConnected();
-        });
+          onConnected(FB.getAuthResponse());
+        // });
       }
     }
 
@@ -54,20 +55,30 @@
    }(document, 'script', 'facebook-jssdk'));
 
 
-  function onConnected() {
-    FB.ui({method: 'apprequests',
-      message: 'Yo bing.',
-      to: '100001439708199, 100001056938824',
-      action_type:'turn'
-    }, function(response){
-      console.log(response);
+  function onConnected(privateData) {
+    var p = document.createElement('a');
+    p.href = window.location.href;
+    var allGetElements = p.search.split("?")[1].split("&");
+
+    var data = {};
+    allGetElements.map(function(val) {
+      var tmp = val.split("=");
+      data[tmp[0]] = tmp[1];
     });
-    // FB.ui({method: 'apprequests',
-    //   message: 'Yo Bing',
-    //   to: '100001439708199, 100001056938824'
-    // }, function(response){
-    //   console.log(response);
-    // });
+    // GET https://graph.facebook.com/<USER_ID>/apprequests?fields=id,application,to,from,data,message,action_type,object,created_time&access_token=APP_ACCESS_TOKEN
+
+    // http://graph.facebook.com/<REQUEST_OBJECT_ID>?fields=data&access_token=USER_ACCESS_TOKEN
+
+    if(data.request_ids) {
+      FB.api("/" + data.request_ids + "?fields=data&access_token" + privateData.accessToken, function(val) {
+        console.log(val);
+      });
+      // FB.api(privateData.userID + '/apprequests?fields=id,application,to,from,data,message,action_type,object,created_time&access_token=' + privateData.accessToken, function(val) {
+      //   console.log(val);
+      // });
+    } else {
+      opponent.sendTurn();
+    }
   }
 </script>
 <h1 id="fb-welcome"></h1>
