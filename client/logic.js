@@ -4,12 +4,12 @@ var logic = (function(g) {
       for (var j = 0; j < g.NUM_ROWS; j++){
         var enemy = new Piece();
         enemy.isAlly = false;
-        enemy.x = ((j+1)%2) + ~~(i*2);
+        enemy.x = ((j+1)%2) + Math.floor(i*2);
         enemy.y = j;
         g.board[enemy.x][enemy.y] = enemy;
 
         var ally = new Piece();
-        ally.x = (j%2) + ~~(i*2);
+        ally.x = (j%2) + Math.floor(i*2);
         ally.y = g.BOARD_SIZE - 1 - j;
         g.board[ally.x][ally.y] = ally;
       }
@@ -20,11 +20,15 @@ var logic = (function(g) {
     return (x >= 0 && y >= 0 && x < g.BOARD_SIZE && y < g.BOARD_SIZE);
   };
 
+  function inc(a) {
+    return a >= 0 ? a + 1 : a - 1;
+  }
   this.reverseMove = function(move){
-    move.srcX = g.BOARD_SIZE - move.srcX;
-    move.srcY = g.BOARD_SIZE - move.srcY;
-    move.destX = g.BOARD_SIZE - move.destX;
-    move.destY = g.BOARD_SIZE - move.destY;
+    move.srcX = g.BOARD_SIZE - 1 - move.srcX;
+    move.srcY = g.BOARD_SIZE - 1 - move.srcY;
+    move.destX = g.BOARD_SIZE - 1 - move.destX;
+    move.destY = g.BOARD_SIZE - 1 - move.destY;
+    return move;
   };
 
 
@@ -171,9 +175,9 @@ var logic = (function(g) {
     for (var i = g.BOARD_SIZE - 1; i >= 0; i--) {
       for (var j = g.BOARD_SIZE- 1; j >= 0; j--) {
         if (!enemyWon && !allyWon) return;
-        var piece = g.board[i][j];
-        if(piece) {
-          if (piece.isAlly) {
+        var p = g.board[i][j];
+        if(p) {
+          if (p.isAlly) {
             enemyWon = false;
           } else {
             allyWon = false;
@@ -193,9 +197,8 @@ var logic = (function(g) {
     };
   };
 
-  this.makeEnemyMove = function(moves) {
-    moves.map(reverseMove);
-    return makeFullMove(moves);
+  this.makeEnemyMoves = function(moves) {
+    moves.map(reverseMove).map(movePiece);
   };
 
   return this;

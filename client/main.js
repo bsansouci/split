@@ -1,4 +1,4 @@
-(function(g) {
+var __display = (function(g) {
   g.game = new Phaser.Game(600, 600, Phaser.AUTO, 'checkers', { preload: preload, create: create });
 
   function preload() {
@@ -50,17 +50,21 @@
         else if (!move) return;
 
         g.moveHistory.push(move);
-        drawMove(move);
         logic.movePiece(move);
+        drawMove(move);
         if (!move.isFinal){
           clickedOnPiece(pos.x, pos.y, graphics);
         } else {
           drawBoard(graphics);
-          g.state = g.GameState.NEW_MOVE;
+          g.state = g.GameState.WAITING;
+
+          opponent.sendTurn();
+
           submitMove();
         }
         break;
       case g.GameState.WAITING:
+
         // Placeholder for enemy's move
         break;
     }
@@ -103,24 +107,13 @@
     g.currentPossibleMoves = possibleMoves;
   }
 
-  function test(){
-    console.log("after");
-  }
-
   function drawMove(move) {
-    piece = g.board[move.srcX][move.srcY];
+    piece = g.board[move.destX][move.destY];
     piece.sprite.bringToTop();
-//    var tween = g.game.add.tween(piece.sprite.position).to({x: move.destX * g.GAME_SCALE, y: move.destY * g.GAME_SCALE}, 1000, Phaser.Easing.Quadratic.Out, true).start();
     var tween = g.game.add.tween(piece.sprite.position)
     var dest = {x: move.destX * g.GAME_SCALE, y: move.destY * g.GAME_SCALE};
     tween.to(dest, 1000, Phaser.Easing.Quadratic.Out, true);
     tween.onComplete.add(_.partial(afterMove, move), this);
-
-    // TODO: Convert to king when applicable
-    if (piece.isKing && !!piece.sprite.key.match("piece")){
-      console.log("HEHEYEYYEY");
-      piece.sprite.loadTexture((piece.isAlly ? "red" : "black") +"-king");
-    }
   }
 
   function afterMove(move){
@@ -131,7 +124,12 @@
       captured.sprite.destroy();
       pieceCaptured(captured);
     }
-  }
+
+    // Convert to king when applicable
+    if (piece.isKing && !!piece.sprite.key.match("piece")){
+      piece.sprite.loadTexture((piece.isAlly ? "red" : "black") +"-king");
+    }
+  };
 
   function drawBoard(graphics) {
     graphics.beginFill(0x181818);
@@ -145,4 +143,6 @@
       }
     }
   }
+
+  return this;
 }).call(this, GLOBAL);
