@@ -122,10 +122,10 @@ var __DISPLAY = __DISPLAY || {};
   function afterMove(move){
     console.log("after");
     if (move.captures) {
-      var mid = getMiddle(move);
+      var mid = logic.getMiddle(move);
       var captured = g.board[mid.x][mid.y];
       captured.sprite.destroy();
-      pieceCaptured(captured);
+      logic.pieceCaptured(captured);
     }
 
     // Convert to king when applicable
