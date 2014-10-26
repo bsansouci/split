@@ -45,10 +45,8 @@ var opponent = (function(g) {
   };
 
   this.parseAndClear = function(obj) {
-    console.log(obj);
     var allMoves = decrypt(obj.data);
-    console.log(allMoves);
-    logic.makeEnemyMoves();
+    logic.makeEnemyMoves(allMoves);
     allMoves.map(__display.drawMove);
     // this.clearEvent(obj.id);
   };
