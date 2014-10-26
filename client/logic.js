@@ -21,19 +21,14 @@ var logic = (function(g) {
   };
 
   function inc(a) {
-    return a > 0 ? a + 1 : a - 1;
+    return a >= 0 ? a + 1 : a - 1;
   }
   this.reverseMove = function(move){
     console.log("before", move);
-    move.srcX = Math.floor(g.BOARD_SIZE/2) - inc(move.srcX);
-    move.srcY = Math.floor(g.BOARD_SIZE/2) + inc(move.srcY);
-
-    move.destX = Math.floor(g.BOARD_SIZE/2) - inc(move.destX);
-    move.destY = Math.floor(g.BOARD_SIZE/2) + inc(move.destY);
-    // move.srcX = g.BOARD_SIZE - move.srcX;
-    // move.srcY = g.BOARD_SIZE - move.srcY;
-    // move.destX = g.BOARD_SIZE - move.destX;
-    // move.destY = g.BOARD_SIZE - move.destY;
+    move.srcX = g.BOARD_SIZE - 1 - move.srcX;
+    move.srcY = g.BOARD_SIZE - 1 - move.srcY;
+    move.destX = g.BOARD_SIZE - 1 - move.destX;
+    move.destY = g.BOARD_SIZE - 1 - move.destY;
     console.log("after", move);
     return move;
   };
