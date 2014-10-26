@@ -105,7 +105,7 @@ var __display = (function(g) {
     g.currentPossibleMoves = possibleMoves;
   }
 
-  this.this.drawMove = function(move) {
+  this.drawMove = function(move) {
     g.board[move.srcX][move.srcY].sprite.bringToTop();
     g.game.add.tween(g.board[move.srcX][move.srcY].sprite.position).to({x: move.destX * g.GAME_SCALE, y: move.destY * g.GAME_SCALE}, 1000, Phaser.Easing.Quadratic.Out, true);
     if (move.captures) {

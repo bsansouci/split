@@ -24,12 +24,10 @@ var logic = (function(g) {
     return a >= 0 ? a + 1 : a - 1;
   }
   this.reverseMove = function(move){
-    console.log("before", move);
     move.srcX = g.BOARD_SIZE - 1 - move.srcX;
     move.srcY = g.BOARD_SIZE - 1 - move.srcY;
     move.destX = g.BOARD_SIZE - 1 - move.destX;
     move.destY = g.BOARD_SIZE - 1 - move.destY;
-    console.log("after", move);
     return move;
   };
 
