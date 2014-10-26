@@ -106,8 +106,8 @@ var __display = (function(g) {
   }
 
   this.drawMove = function(move) {
-    g.board[move.srcX][move.srcY].sprite.bringToTop();
-    g.game.add.tween(g.board[move.srcX][move.srcY].sprite.position).to({x: move.destX * g.GAME_SCALE, y: move.destY * g.GAME_SCALE}, 1000, Phaser.Easing.Quadratic.Out, true);
+    g.board[move.destX][move.destY].sprite.bringToTop();
+    g.game.add.tween(g.board[move.destX][move.destY].sprite.position).to({x: move.destX * g.GAME_SCALE, y: move.destY * g.GAME_SCALE}, 1000, Phaser.Easing.Quadratic.Out, true);
     if (move.captures) {
       var mid = getMiddle(move);
       var capture = g.board[mid.x][mid.y];
