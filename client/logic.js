@@ -1,5 +1,16 @@
-var logic = (function(g) {
-  this.initialize = function(){
+var LOGIC = LOGIC || {};
+var __DISPLAY = __DISPLAY || {};
+
+(function(g, display, logic) {
+  // Public functions
+  logic.initialize = initialize;
+  logic.possibleSubMoves = possibleSubMoves;
+  logic.movePiece = movePiece;
+  logic.pieceCaptured = pieceCaptured;
+  logic.getMiddle = getMiddle;
+  logic.makeEnemyMoves = makeEnemyMoves;
+
+  function initialize(){
     for (var i = 0; i < g.BOARD_SIZE/2; i++){
       for (var j = 0; j < g.NUM_ROWS; j++){
         var enemy = new Piece();
@@ -14,26 +25,27 @@ var logic = (function(g) {
         g.board[ally.x][ally.y] = ally;
       }
     }
-  };
+  }
 
-  this.isValid = function(x, y) {
+  function isValid(x, y) {
     return (x >= 0 && y >= 0 && x < g.BOARD_SIZE && y < g.BOARD_SIZE);
-  };
+  }
 
   function inc(a) {
     return a >= 0 ? a + 1 : a - 1;
   }
-  this.reverseMove = function(move){
+
+  function reverseMove(move){
     move.srcX = g.BOARD_SIZE - 1 - move.srcX;
     move.srcY = g.BOARD_SIZE - 1 - move.srcY;
     move.destX = g.BOARD_SIZE - 1 - move.destX;
     move.destY = g.BOARD_SIZE - 1 - move.destY;
     return move;
-  };
+  }
 
 
-// testLocal should not be specified.
-  this.possibleSubMoves = function(piece, testLocal) {
+  // testLocal should not be specified.
+  function possibleSubMoves(piece, testLocal) {
     if(!piece) return [];
     var xOffsets;
     var yOffsets;
@@ -92,9 +104,9 @@ var logic = (function(g) {
       }
     }
     return moves;
-  };
+  }
 
-  this.movePiece = function(src, dest) {
+  function movePiece(src, dest) {
     // If it wasn't given a dest, we assume that src is of type Move
     if(!dest) {
       dest = {
@@ -118,56 +130,56 @@ var logic = (function(g) {
     } else if(!g.board[dest.x][dest.y].isAlly && dest.y === g.BOARD_SIZE - 1) {
       g.board[dest.x][dest.y].isKing = true;
     }
-  };
+  }
 
-  this.makeFullMove = function(moves) {
-    var last;
-    var failure = false;
-    committedMoves = [];
+  // function makeFullMove(moves) {
+  //   var last;
+  //   var failure = false;
+  //   committedMoves = [];
 
-    for (var move in moves){
-      var x = move.srcX;
-      var y = move.srcY;
-      if (isValid(x,y) && g.board[x][y]){
-        if (_.where(possibleSubMoves(g.board[x][y], committedMoves), move).length > 0){
-          // Valid move
-          last = move;
-          p = g.board[x][y];
-          p.x = move.destX;
-          p.y = move.destY;
-          g.board[p.x][p.y] = p;
-          g.board[x][y] = null;
-          committedMoves.push(move);
-        } else {
-          failure = true;
-          break;
-        }
-      }
-    }
+  //   for (var move in moves){
+  //     var x = move.srcX;
+  //     var y = move.srcY;
+  //     if (isValid(x,y) && g.board[x][y]){
+  //       if (_.where(logic.possibleSubMoves(g.board[x][y], committedMoves), move).length > 0){
+  //         // Valid move
+  //         last = move;
+  //         p = g.board[x][y];
+  //         p.x = move.destX;
+  //         p.y = move.destY;
+  //         g.board[p.x][p.y] = p;
+  //         g.board[x][y] = null;
+  //         committedMoves.push(move);
+  //       } else {
+  //         failure = true;
+  //         break;
+  //       }
+  //     }
+  //   }
 
-    if (failure){
-      // Revert piece moves
-      if (last){
-        var first = move[0];
-        p = g.board[last.destX][last.destY];
-        p.x = first.srcX;
-        p.y = first.srcY;
-        g.board[last.destX][last.destY] = null;
-        g.board[p.x][p.y] = p;
-      }
-    } else {
-      // Remove jumped pieces
-      for (move in moves){
-        mid = getMiddle(move);
-        if (!g.board[mid.x][mid.y].isAlly){
-          pieceCaptured(g.board[mid.x][mid.y]);
-        }
-      }
-    }
-    return moves;
-  };
+  //   if (failure){
+  //     // Revert piece moves
+  //     if (last){
+  //       var first = move[0];
+  //       p = g.board[last.destX][last.destY];
+  //       p.x = first.srcX;
+  //       p.y = first.srcY;
+  //       g.board[last.destX][last.destY] = null;
+  //       g.board[p.x][p.y] = p;
+  //     }
+  //   } else {
+  //     // Remove jumped pieces
+  //     for (move in moves){
+  //       mid = logic.getMiddle(move);
+  //       if (!g.board[mid.x][mid.y].isAlly){
+  //         logic.pieceCaptured(g.board[mid.x][mid.y]);
+  //       }
+  //     }
+  //   }
+  //   return moves;
+  // }
 
-  this.pieceCaptured = function(piece){
+  function pieceCaptured(piece){
     g.board[piece.x][piece.y] = null;
     var enemyWon = true;
     var allyWon = true;
@@ -188,18 +200,16 @@ var logic = (function(g) {
     if (enemyWon) g.state = g.GameState.LOST;
     else g.state = g.GameState.WON;
     return;
-  };
+  }
 
-  this.getMiddle = function(move){
+  function getMiddle(move){
     return {
       x: (move.destX - move.srcX)/2 + move.srcX,
       y: (move.destY - move.srcY)/2 + move.srcY
     };
-  };
+  }
 
-  this.makeEnemyMoves = function(moves) {
+  function makeEnemyMoves(moves) {
     moves.map(reverseMove).map(movePiece);
-  };
-
-  return this;
-}).call(this, GLOBAL);
+  }
+})(GLOBAL, __DISPLAY, LOGIC);

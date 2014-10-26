@@ -1,4 +1,4 @@
-var opponent = (function(g) {
+var opponent = new (function(g) {
   function encrypt(arr) {
     return arr.reduce(function(acc, val) {
       return acc += val.srcX + "." + val.srcY + ":" +
@@ -57,4 +57,4 @@ var opponent = (function(g) {
     });
   };
   return this;
-}).call(this, GLOBAL);
+})(GLOBAL);

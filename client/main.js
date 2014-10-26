@@ -1,4 +1,9 @@
-var __display = (function(g) {
+var LOGIC = LOGIC || {};
+var __DISPLAY = __DISPLAY || {};
+
+(function(g, display, logic) {
+  display.drawMove = drawMove;
+
   g.game = new Phaser.Game(600, 600, Phaser.AUTO, 'checkers', { preload: preload, create: create });
 
   function preload() {
@@ -9,12 +14,11 @@ var __display = (function(g) {
     g.game.load.image('red-king', 'assets/pics/red-king.png');
     g.game.load.image('black-king', 'assets/pics/black-king.png');
   }
-
   function create() {
     var graphics = g.game.add.graphics(0, 0);
     drawBoard(graphics);
     drawPieces(graphics);
-    g.game.input.onDown.add(_.partial(anyClick, graphics), this);
+    g.game.input.onDown.add(_.partial(anyClick, graphics), display);
   }
 
   function drawPieces(graphics) {
@@ -56,9 +60,7 @@ var __display = (function(g) {
           clickedOnPiece(pos.x, pos.y, graphics);
         } else {
           drawBoard(graphics);
-          g.state = g.GameState.WAITING;
-
-          opponent.sendTurn();
+          g.state = g.GameState.NEW_MOVE;
 
           submitMove();
         }
@@ -79,6 +81,7 @@ var __display = (function(g) {
   }
 
   function submitMove(){
+    // opponent.sendTurn();
     g.currentPossibleMoves = [];
     g.moveHistory = [];
   }
@@ -96,7 +99,7 @@ var __display = (function(g) {
     graphics.lineStyle(5, 0x00d9ff, 1);
     graphics.drawRect(x * g.GAME_SCALE, y * g.GAME_SCALE, g.GAME_SCALE, g.GAME_SCALE);
 
-    var possibleMoves = possibleSubMoves(g.board[x][y]);
+    var possibleMoves = logic.possibleSubMoves(g.board[x][y]);
 
     for (var i = 0; i < possibleMoves.length; i++) {
       graphics.beginFill(0x181818);
@@ -110,7 +113,7 @@ var __display = (function(g) {
   function drawMove(move) {
     piece = g.board[move.destX][move.destY];
     piece.sprite.bringToTop();
-    var tween = g.game.add.tween(piece.sprite.position)
+    var tween = g.game.add.tween(piece.sprite.position);
     var dest = {x: move.destX * g.GAME_SCALE, y: move.destY * g.GAME_SCALE};
     tween.to(dest, 1000, Phaser.Easing.Quadratic.Out, true);
     tween.onComplete.add(_.partial(afterMove, move), this);
@@ -129,7 +132,8 @@ var __display = (function(g) {
     if (piece.isKing && !!piece.sprite.key.match("piece")){
       piece.sprite.loadTexture((piece.isAlly ? "red" : "black") +"-king");
     }
-  };
+  }
+
 
   function drawBoard(graphics) {
     graphics.beginFill(0x181818);
@@ -143,6 +147,5 @@ var __display = (function(g) {
       }
     }
   }
-
-  return this;
-}).call(this, GLOBAL);
+  return display;
+})(GLOBAL, __DISPLAY, LOGIC);
