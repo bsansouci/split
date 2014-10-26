@@ -4,12 +4,12 @@ var logic = (function(g) {
       for (var j = 0; j < g.NUM_ROWS; j++){
         var enemy = new Piece();
         enemy.isAlly = false;
-        enemy.x = ((j+1)%2) + ~~(i*2);
+        enemy.x = ((j+1)%2) + Math.floor(i*2);
         enemy.y = j;
         g.board[enemy.x][enemy.y] = enemy;
 
         var ally = new Piece();
-        ally.x = (j%2) + ~~(i*2);
+        ally.x = (j%2) + Math.floor(i*2);
         ally.y = g.BOARD_SIZE - 1 - j;
         g.board[ally.x][ally.y] = ally;
       }
@@ -20,11 +20,21 @@ var logic = (function(g) {
     return (x >= 0 && y >= 0 && x < g.BOARD_SIZE && y < g.BOARD_SIZE);
   };
 
+  function inc(a) {
+    return a > 0 ? a + 1 : a - 1;
+  }
   this.reverseMove = function(move){
-    move.srcX = g.BOARD_SIZE - move.srcX;
-    move.srcY = g.BOARD_SIZE - move.srcY;
-    move.destX = g.BOARD_SIZE - move.destX;
-    move.destY = g.BOARD_SIZE - move.destY;
+    console.log("before", move);
+    move.srcX = Math.floor(g.BOARD_SIZE/2) - inc(move.srcX);
+    move.srcY = Math.floor(g.BOARD_SIZE/2) + inc(move.srcY);
+
+    move.destX = Math.floor(g.BOARD_SIZE/2) - inc(move.destX);
+    move.destY = Math.floor(g.BOARD_SIZE/2) + inc(move.destY);
+    // move.srcX = g.BOARD_SIZE - move.srcX;
+    // move.srcY = g.BOARD_SIZE - move.srcY;
+    // move.destX = g.BOARD_SIZE - move.destX;
+    // move.destY = g.BOARD_SIZE - move.destY;
+    console.log("after", move);
     return move;
   };
 
@@ -104,7 +114,7 @@ var logic = (function(g) {
         y: src.srcY
       };
     }
-    console.log(src, dest);
+    console.log(src, dest, g.board[dest.x][dest.y]);
     g.board[dest.x][dest.y] = g.board[src.x][src.y];
     g.board[src.x][src.y] = null;
     g.board[dest.x][dest.y].x = dest.x;

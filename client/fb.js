@@ -49,7 +49,7 @@ var opponent = (function(g) {
     var arr = decrypt(obj.data);
     console.log(arr);
     logic.makeEnemyMoves(arr);
-    this.clearEvent(obj.id);
+    // this.clearEvent(obj.id);
   };
 
   this.clearEvent = function(requestId) {
