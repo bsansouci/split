@@ -9,7 +9,8 @@ var GLOBAL = (function() {
       CONTINUE: "continue",
       WAITING: "waiting",
       LOST: "lost",
-      WON: "won"
+      WON: "won",
+      ANIMATING: "animating"
     },
     moveHistory: [],
     currentPossibleMoves: [],

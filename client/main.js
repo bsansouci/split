@@ -38,7 +38,7 @@ var __DISPLAY = __DISPLAY || {};
 
   function anyClick(graphics, pointer) {
     var pos = getBoardPos(pointer);
-    console.log("State: ", g.state, " Pos: ", pos, "currentPossibleMoves", g.currentPossibleMoves);
+    // console.log("State: ", g.state, " Pos: ", pos, "currentPossibleMoves", g.currentPossibleMoves);
     switch(g.state) {
       case g.GameState.NEW_MOVE:
         g.state = g.GameState.CONTINUE;
@@ -55,15 +55,14 @@ var __DISPLAY = __DISPLAY || {};
 
         g.moveHistory.push(move);
         logic.movePiece(move);
-        drawMove(move);
         if (!move.isFinal){
           clickedOnPiece(pos.x, pos.y, graphics);
         } else {
           drawBoard(graphics);
           g.state = g.GameState.NEW_MOVE;
-
           submitMove();
         }
+        drawMove(move);
         break;
       case g.GameState.WAITING:
 
@@ -111,16 +110,19 @@ var __DISPLAY = __DISPLAY || {};
   }
 
   function drawMove(move) {
+    var state = g.state;
+    g.state = g.GameState.ANIMATING;
+    console.log(g.state);
     piece = g.board[move.destX][move.destY];
     piece.sprite.bringToTop();
     var tween = g.game.add.tween(piece.sprite.position);
     var dest = {x: move.destX * g.GAME_SCALE, y: move.destY * g.GAME_SCALE};
     tween.to(dest, 1000, Phaser.Easing.Quadratic.Out, true);
-    tween.onComplete.add(_.partial(afterMove, move), this);
+    tween.onComplete.add(_.partial(afterMove, move, state), this);
+    g.state = g.GameState.ANIMATING;
   }
 
-  function afterMove(move){
-    console.log("after");
+  function afterMove(move, formerState){
     if (move.captures) {
       var mid = logic.getMiddle(move);
       var captured = g.board[mid.x][mid.y];
@@ -132,6 +134,8 @@ var __DISPLAY = __DISPLAY || {};
     if (piece.isKing && !!piece.sprite.key.match("piece")){
       piece.sprite.loadTexture((piece.isAlly ? "red" : "black") +"-king");
     }
+    console.log(g.state);
+    g.state = formerState;
   }
 
 
