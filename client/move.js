@@ -5,7 +5,7 @@ var Move = function() {
     destX: 0,
     destY: 0,
     isFinal: true,
-    captures: false
+    captures: false,
   };
   return obj;
 };

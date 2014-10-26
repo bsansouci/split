@@ -1,7 +1,7 @@
 var GLOBAL = (function() {
   var obj = {
     GAME_SCALE: 75,
-    SPRITE_SCALE: 0.4,
+    SPRITE_SCALE: 0.25,
     BOARD_SIZE: 8,
     NUM_ROWS: 3,
     GameState: {

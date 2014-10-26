@@ -6,6 +6,8 @@
 
     g.game.load.image('red-piece', 'assets/pics/red-piece.png');
     g.game.load.image('black-piece', 'assets/pics/black-piece.png');
+    g.game.load.image('red-king', 'assets/pics/red-king.png');
+    g.game.load.image('black-king', 'assets/pics/black-king.png');
   }
 
   function create() {
@@ -101,14 +103,33 @@
     g.currentPossibleMoves = possibleMoves;
   }
 
+  function test(){
+    console.log("after");
+  }
+
   function drawMove(move) {
-    g.board[move.srcX][move.srcY].sprite.bringToTop();
-    g.game.add.tween(g.board[move.srcX][move.srcY].sprite.position).to({x: move.destX * g.GAME_SCALE, y: move.destY * g.GAME_SCALE}, 1000, Phaser.Easing.Quadratic.Out, true);
+    piece = g.board[move.srcX][move.srcY];
+    piece.sprite.bringToTop();
+//    var tween = g.game.add.tween(piece.sprite.position).to({x: move.destX * g.GAME_SCALE, y: move.destY * g.GAME_SCALE}, 1000, Phaser.Easing.Quadratic.Out, true).start();
+    var tween = g.game.add.tween(piece.sprite.position)
+    var dest = {x: move.destX * g.GAME_SCALE, y: move.destY * g.GAME_SCALE};
+    tween.to(dest, 1000, Phaser.Easing.Quadratic.Out, true);
+    tween.onComplete.add(_.partial(afterMove, move), this);
+
+    // TODO: Convert to king when applicable
+    if (piece.isKing && !!piece.sprite.key.match("piece")){
+      console.log("HEHEYEYYEY");
+      piece.sprite.loadTexture((piece.isAlly ? "red" : "black") +"-king");
+    }
+  }
+
+  function afterMove(move){
+    console.log("after");
     if (move.captures) {
       var mid = getMiddle(move);
-      var capture = g.board[mid.x][mid.y];
-      capture.sprite.destroy();
-      pieceCaptured(capture);
+      var captured = g.board[mid.x][mid.y];
+      captured.sprite.destroy();
+      pieceCaptured(captured);
     }
   }
 
