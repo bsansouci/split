@@ -109,7 +109,7 @@ var logic = (function(g) {
         y: src.srcY
       };
     }
-    console.log(src, dest, g.board[dest.x][dest.y]);
+
     g.board[dest.x][dest.y] = g.board[src.x][src.y];
     g.board[src.x][src.y] = null;
     g.board[dest.x][dest.y].x = dest.x;

@@ -1,4 +1,4 @@
-(function(g) {
+var __display = (function(g) {
   g.game = new Phaser.Game(600, 600, Phaser.AUTO, 'checkers', { preload: preload, create: create });
 
   function preload() {
@@ -48,8 +48,8 @@
         else if (!move) return;
 
         g.moveHistory.push(move);
-        drawMove(move);
         logic.movePiece(move);
+        this.drawMove(move);
         if (!move.isFinal){
           clickedOnPiece(pos.x, pos.y, graphics);
         } else {
@@ -105,7 +105,7 @@
     g.currentPossibleMoves = possibleMoves;
   }
 
-  function drawMove(move) {
+  this.this.drawMove = function(move) {
     g.board[move.srcX][move.srcY].sprite.bringToTop();
     g.game.add.tween(g.board[move.srcX][move.srcY].sprite.position).to({x: move.destX * g.GAME_SCALE, y: move.destY * g.GAME_SCALE}, 1000, Phaser.Easing.Quadratic.Out, true);
     if (move.captures) {
@@ -114,7 +114,7 @@
       capture.sprite.destroy();
       pieceCaptured(capture);
     }
-  }
+  };
 
   function drawBoard(graphics) {
     graphics.beginFill(0x181818);
@@ -128,4 +128,6 @@
       }
     }
   }
+
+  return this;
 }).call(this, GLOBAL);
