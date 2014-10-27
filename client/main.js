@@ -126,12 +126,16 @@ var __OPPONENT = __OPPONENT || {};
     piece.sprite.bringToTop();
     var tween = g.game.add.tween(piece.sprite.position);
     var dest = {x: move.destX * g.GAME_SCALE, y: move.destY * g.GAME_SCALE};
-    tween.to(dest, 1000, Phaser.Easing.Quadratic.Out, true);
+    tween.to(dest, 500, Phaser.Easing.Quadratic.Out, true);
     tween.onComplete.add(_.partial(afterMove, move, state), this);
-    g.state = g.GameState.ANIMATING;
   }
 
   function afterMove(move, formerState){
+    // Convert to king when applicable
+    if (piece.isKing && !!piece.sprite.key.match("piece")){
+      piece.sprite.loadTexture((piece.isAlly ? "red" : "black") +"-king");
+    }
+
     //var move = context.move;
     if (move.captures) {
       var mid = logic.getMiddle(move);
@@ -144,14 +148,11 @@ var __OPPONENT = __OPPONENT || {};
         y: captured.isAlly ? (200 - g.STACK_INCREMENT*g.enemyNumCaptured) :
                               500 - g.STACK_INCREMENT*g.allyNumCaptured
       };
-      tween.to(dest, 1000, Phaser.Easing.Quadratic.Out, true);
+      tween.to(dest, 500, Phaser.Easing.Quadratic.Out, true);
+      tween.onComplete.add(function () {g.state = formerState;}, this);
+    } else {
+      g.state = formerState;
     }
-
-    // Convert to king when applicable
-    if (piece.isKing && !!piece.sprite.key.match("piece")){
-      piece.sprite.loadTexture((piece.isAlly ? "red" : "black") +"-king");
-    }
-    g.state = formerState;
   }
 
 

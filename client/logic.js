@@ -135,8 +135,11 @@ var __DISPLAY = __DISPLAY || {};
   function pieceCaptured(piece){
     g.board[piece.x][piece.y] = null;
 
-    if (piece.isAlly) g.allyNumCaptured++;
-    else g.enemyNumCaptured++;
+    if (piece.isAlly) {
+      g.enemyNumCaptured++;
+    } else {
+      g.allyNumCaptured++;
+    }
 
     var piecesToWin = g.BOARD_SIZE * g.NUM_ROWS / 2;
     if (g.allyNumCaptured === piecesToWin){
