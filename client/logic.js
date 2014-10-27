@@ -134,24 +134,16 @@ var __DISPLAY = __DISPLAY || {};
 
   function pieceCaptured(piece){
     g.board[piece.x][piece.y] = null;
-    var enemyWon = true;
-    var allyWon = true;
 
-    for (var i = g.BOARD_SIZE - 1; i >= 0; i--) {
-      for (var j = g.BOARD_SIZE- 1; j >= 0; j--) {
-        if (!enemyWon && !allyWon) return;
-        var p = g.board[i][j];
-        if(p) {
-          if (p.isAlly) {
-            enemyWon = false;
-          } else {
-            allyWon = false;
-          }
-        }
-      }
+    if (piece.isAlly) g.allyNumCaptured++;
+    else g.enemyNumCaptured++;
+
+    var piecesToWin = g.BOARD_SIZE * g.NUM_ROWS / 2;
+    if (g.allyNumCaptured === piecesToWin){
+      g.state = g.GameState.WON;
+    } else if (g.enemyNumCaptured === piecesToWin){
+      g.state = g.GameState.LOST;
     }
-    if (enemyWon) g.state = g.GameState.LOST;
-    else g.state = g.GameState.WON;
     return;
   }
 

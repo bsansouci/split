@@ -131,18 +131,23 @@ var __OPPONENT = __OPPONENT || {};
   }
 
   function afterMove(move, formerState){
+    //var move = context.move;
     if (move.captures) {
       var mid = logic.getMiddle(move);
       var captured = g.board[mid.x][mid.y];
-      captured.sprite.destroy();
-      logic.pieceCaptured(captured);
+      var tween = g.game.add.tween(captured.sprite.position);
+      var dest = {x: 0, y: 0};
+      tween.to(dest, 1000, Phaser.Easing.Quadratic.Out, true);
+      tween.onComplete.add(function() {
+        //captured.sprite.destroy();
+        logic.pieceCaptured(captured);
+      });
     }
 
     // Convert to king when applicable
     if (piece.isKing && !!piece.sprite.key.match("piece")){
       piece.sprite.loadTexture((piece.isAlly ? "red" : "black") +"-king");
     }
-    console.log(g.state);
     g.state = formerState;
   }
 
