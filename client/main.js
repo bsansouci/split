@@ -10,7 +10,8 @@ var __OPPONENT = __OPPONENT || {};
   display.refresh = null;
 
   // Main
-  g.game = new Phaser.Game(750, 600, Phaser.AUTO, 'checkers', { preload: preload, create: create });
+  g.game = new Phaser.Game(g.GAME_SCALE*g.BOARD_SIZE + 150,
+        g.GAME_SCALE*g.BOARD_SIZE, Phaser.AUTO, 'checkers', { preload: preload, create: create });
 
   function preload() {
     logic.initialize();
