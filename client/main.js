@@ -10,7 +10,7 @@ var __OPPONENT = __OPPONENT || {};
   display.refresh = null;
 
   // Main
-  g.game = new Phaser.Game(600, 600, Phaser.AUTO, 'checkers', { preload: preload, create: create });
+  g.game = new Phaser.Game(750, 600, Phaser.AUTO, 'checkers', { preload: preload, create: create });
 
   function preload() {
     logic.initialize();
@@ -135,13 +135,15 @@ var __OPPONENT = __OPPONENT || {};
     if (move.captures) {
       var mid = logic.getMiddle(move);
       var captured = g.board[mid.x][mid.y];
+      logic.pieceCaptured(captured);
+      captured.sprite.bringToTop();
       var tween = g.game.add.tween(captured.sprite.position);
-      var dest = {x: 0, y: 0};
+      var dest = {
+        x: (g.GAME_SCALE * g.BOARD_SIZE) + 40,
+        y: captured.isAlly ? (200 - g.STACK_INCREMENT*g.enemyNumCaptured) :
+                              500 - g.STACK_INCREMENT*g.allyNumCaptured
+      };
       tween.to(dest, 1000, Phaser.Easing.Quadratic.Out, true);
-      tween.onComplete.add(function() {
-        //captured.sprite.destroy();
-        logic.pieceCaptured(captured);
-      });
     }
 
     // Convert to king when applicable
@@ -153,6 +155,9 @@ var __OPPONENT = __OPPONENT || {};
 
 
   function drawBoard(graphics) {
+    graphics.beginFill(0x601407);
+    graphics.drawRect(0, 0, g.GAME_SCALE*g.BOARD_SIZE+150, g.GAME_SCALE*g.BOARD_SIZE);
+
     graphics.beginFill(0x181818);
     graphics.lineStyle(5, 0xffd900, 1);
     graphics.drawRect(0, 0, g.GAME_SCALE*g.BOARD_SIZE, g.GAME_SCALE*g.BOARD_SIZE);
