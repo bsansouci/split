@@ -1,4 +1,4 @@
-var LOGIC = LOGIC || {};
+var __LOGIC = __LOGIC || {};
 var __DISPLAY = __DISPLAY || {};
 
 (function(g, display, logic) {
@@ -132,53 +132,6 @@ var __DISPLAY = __DISPLAY || {};
     }
   }
 
-  // function makeFullMove(moves) {
-  //   var last;
-  //   var failure = false;
-  //   committedMoves = [];
-
-  //   for (var move in moves){
-  //     var x = move.srcX;
-  //     var y = move.srcY;
-  //     if (isValid(x,y) && g.board[x][y]){
-  //       if (_.where(logic.possibleSubMoves(g.board[x][y], committedMoves), move).length > 0){
-  //         // Valid move
-  //         last = move;
-  //         p = g.board[x][y];
-  //         p.x = move.destX;
-  //         p.y = move.destY;
-  //         g.board[p.x][p.y] = p;
-  //         g.board[x][y] = null;
-  //         committedMoves.push(move);
-  //       } else {
-  //         failure = true;
-  //         break;
-  //       }
-  //     }
-  //   }
-
-  //   if (failure){
-  //     // Revert piece moves
-  //     if (last){
-  //       var first = move[0];
-  //       p = g.board[last.destX][last.destY];
-  //       p.x = first.srcX;
-  //       p.y = first.srcY;
-  //       g.board[last.destX][last.destY] = null;
-  //       g.board[p.x][p.y] = p;
-  //     }
-  //   } else {
-  //     // Remove jumped pieces
-  //     for (move in moves){
-  //       mid = logic.getMiddle(move);
-  //       if (!g.board[mid.x][mid.y].isAlly){
-  //         logic.pieceCaptured(g.board[mid.x][mid.y]);
-  //       }
-  //     }
-  //   }
-  //   return moves;
-  // }
-
   function pieceCaptured(piece){
     g.board[piece.x][piece.y] = null;
     var enemyWon = true;
@@ -212,4 +165,4 @@ var __DISPLAY = __DISPLAY || {};
   function makeEnemyMoves(moves) {
     moves.map(reverseMove).map(movePiece);
   }
-})(GLOBAL, __DISPLAY, LOGIC);
+})(__GLOBAL, __DISPLAY, __LOGIC);

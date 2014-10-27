@@ -2,77 +2,115 @@
 <html>
 <head>
 <script type="text/javascript" src="libs/phaser.js"></script>
-<!-- <script type="text/javascript" src="//cdnjs.buttflare.com/ajax/libs/lodash.js/2.4.1/lodash.js"></script> -->
+<script src="//www.parsecdn.com/js/parse-1.3.1.min.js"></script>
 <script type="text/javascript" src="libs/lodash.js"></script>
 <script type="text/javascript" src="global.js"></script>
 <script type="text/javascript" src="piece.js"></script>
 <script type="text/javascript" src="logic.js"></script>
 <script type="text/javascript" src="move.js"></script>
-<script type="text/javascript" src="main.js"></script>
 <script type="text/javascript" src="fb.js"></script>
-  <title></title>
+<script type="text/javascript" src="main.js"></script>
+
+  <title>Split</title>
 </head>
 <body>
 <script>
-  window.fbAsyncInit = function() {
-    FB.init({
-      appId      : '1468388983449543',
-      xfbml      : true,
-      version    : 'v2.1',
-      frictionlessRequests : true
-    });
+  (function(g, display, logic, opponent) {
+    Parse.initialize("nf0GIoSnS5rGiblTT59PZ9B3j4WOAmWIXqta2lbT", "zliwaIweOFowVIvAS4Kprxc3yrbVS7fHg2IDdVy4");
+    var ParseGameBoard = Parse.Object.extend("gameboard");
 
-    function onLogin(response) {
-      if (response.status == 'connected') {
-        // FB.api('/me?fields=id', function(data) {
-          // var welcomeBlock = document.getElementById('fb-welcome');
-          // welcomeBlock.innerHTML = 'Hello, ' + data.first_name + '!';
-          onConnected(FB.getAuthResponse());
-        // });
-      }
-    }
+    window.onunload = window.onbeforeunload = function() {
+      var b = new ParseGameBoard();
+      // var id = g.userID.length > g.opponentID.length ? "" + g.userID + g.opponentID : "" + g.opponentID + g.userID;
 
-
-    FB.getLoginStatus(function(response) {
-      // Check login status on load, and if the user is
-      // already logged in, go directly to the welcome message.
-      if (response.status == 'connected') {
-        onLogin(response);
-      } else {
-        // Otherwise, show Login dialog first.
-        FB.login(function(response) {
-          onLogin(response);
-        }, {scope: 'user_friends, email'});
-      }
-    });
-  };
-
-  (function(d, s, id){
-     var js, fjs = d.getElementsByTagName(s)[0];
-     if (d.getElementById(id)) {return;}
-     js = d.createElement(s); js.id = id;
-     js.src = "//connect.facebook.net/en_US/sdk.js";
-     fjs.parentNode.insertBefore(js, fjs);
-   }(document, 'script', 'facebook-jssdk'));
-
-
-  function onConnected(privateData) {
-    var p = document.createElement('a');
-    p.href = window.location.href;
-    var allGetElements = p.search.split("?")[1].split("&");
-
-    var data = {};
-    allGetElements.map(function(val) {
-      var tmp = val.split("=");
-      data[tmp[0]] = tmp[1];
-    });
-
-    if(data.request_ids) {
-      FB.api(privateData.userID + '/apprequests?fields=id,application,to,from,data,message,action_type,object,created_time&access_token=' + privateData.accessToken, function(val) {
-        opponent.parseAndClear(val.data[0]);
+      b.save({
+        userID: id,
+        opponentID: g.opponentID,
+        board: g.board
+      }).then(function(object) {
+        console.log(object);
+        alert("yay! it worked");
       });
+      return null;
+    };
+
+    window.fbAsyncInit = function() {
+      FB.init({
+        appId      : '1468388983449543',
+        xfbml      : true,
+        version    : 'v2.1',
+        frictionlessRequests : true
+      });
+
+      function onLogin(response) {
+        if (response.status == 'connected') {
+          // FB.api('/me?fields=id', function(data) {
+            // var welcomeBlock = document.getElementById('fb-welcome');
+            // welcomeBlock.innerHTML = 'Hello, ' + data.first_name + '!';
+            onConnected(FB.getAuthResponse());
+          // });
+        }
+      }
+
+
+      FB.getLoginStatus(function(response) {
+        // Check login status on load, and if the user is
+        // already logged in, go directly to the welcome message.
+        if (response.status == 'connected') {
+          onLogin(response);
+        } else {
+          // Otherwise, show Login dialog first.
+          FB.login(function(response) {
+            onLogin(response);
+          }, {scope: 'user_friends, email'});
+        }
+      });
+    };
+
+    (function(d, s, id){
+       var js, fjs = d.getElementsByTagName(s)[0];
+       if (d.getElementById(id)) {return;}
+       js = d.createElement(s); js.id = id;
+       js.src = "//connect.facebook.net/en_US/sdk.js";
+       fjs.parentNode.insertBefore(js, fjs);
+     }(document, 'script', 'facebook-jssdk'));
+
+
+    function onConnected(privateData) {
+      var p = document.createElement('a');
+      p.href = window.location.href;
+      var allGetElements = p.search.split("?")[1].split("&");
+
+      var data = {};
+      allGetElements.map(function(val) {
+        var tmp = val.split("=");
+        data[tmp[0]] = tmp[1];
+      });
+
+      var query = new Parse.Query(ParseGameBoard);
+      query.equalTo("userID", privateData.userID);
+      query.find({
+        success: function(results) {
+          results.map(function(val) {
+            g.board = val.get('board');
+            display.refresh();
+          });
+        },
+        error: function(error) {
+          alert("Error: " + error.code + " " + error.message);
+        }
+      });
+
+      if(data.request_ids) {
+        FB.api(privateData.userID + '/apprequests?fields=id,application,to,from,data,message,action_type,object,created_time&access_token=' + privateData.accessToken, function(val) {
+          g.userID = privateData.userID;
+          g.opponentID = data[0].from.id;
+          opponent.parseAndClear(val.data[0]);
+        });
+      }
     }
-  }
+
+  })(__GLOBAL, __DISPLAY, __LOGIC, __OPPONENT);
 </script>
 <h1 id="fb-welcome"></h1>
 </body>

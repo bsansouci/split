@@ -1,4 +1,8 @@
-var opponent = new (function(g) {
+var __LOGIC = __LOGIC || {};
+var __DISPLAY = __DISPLAY || {};
+var __OPPONENT = __OPPONENT || {};
+
+(function(g, display, logic, opponent) {
   function encrypt(arr) {
     return arr.reduce(function(acc, val) {
       return acc += val.srcX + "." + val.srcY + ":" +
@@ -48,6 +52,7 @@ var opponent = new (function(g) {
     var allMoves = decrypt(obj.data);
     logic.makeEnemyMoves(allMoves);
     allMoves.map(__display.drawMove);
+    console.log("THERE IS A LINE OF CODE THAT NEEDS TO BE UNCOMMENTED");
     // this.clearEvent(obj.id);
   };
 
@@ -57,4 +62,4 @@ var opponent = new (function(g) {
     });
   };
   return this;
-})(GLOBAL);
+})(__GLOBAL, __DISPLAY, __LOGIC, __OPPONENT);

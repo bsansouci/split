@@ -1,9 +1,15 @@
 var LOGIC = LOGIC || {};
 var __DISPLAY = __DISPLAY || {};
+var __OPPONENT = __OPPONENT || {};
 
-(function(g, display, logic) {
+(function(g, display, logic, opponent) {
+  // Public functions
   display.drawMove = drawMove;
 
+  // This function is instantiated in create()
+  display.refresh = null;
+
+  // Main
   g.game = new Phaser.Game(600, 600, Phaser.AUTO, 'checkers', { preload: preload, create: create });
 
   function preload() {
@@ -14,10 +20,12 @@ var __DISPLAY = __DISPLAY || {};
     g.game.load.image('red-king', 'assets/pics/red-king.png');
     g.game.load.image('black-king', 'assets/pics/black-king.png');
   }
+
   function create() {
     var graphics = g.game.add.graphics(0, 0);
     drawBoard(graphics);
     drawPieces(graphics);
+    display.refresh = _.partial(drawPieces, graphics);
     g.game.input.onDown.add(_.partial(anyClick, graphics), display);
   }
 
@@ -152,4 +160,4 @@ var __DISPLAY = __DISPLAY || {};
     }
   }
   return display;
-})(GLOBAL, __DISPLAY, LOGIC);
+})(__GLOBAL, __DISPLAY, __LOGIC, __OPPONENT);
