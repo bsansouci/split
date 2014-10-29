@@ -72,20 +72,20 @@
         data[tmp[0]] = tmp[1];
       });
 
-      var query = new Parse.Query(g.ParseGameBoard);
-      query.equalTo("userID", privateData.userID);
-      query.find({
-        success: function(results) {
-          results.map(function(val) {
-            g.board = val.get('board');
-            display.refresh();
-          });
-        },
-        error: function(error) {
-          alert("Error: " + error.code + " " + error.message);
-        }
-      });
-
+      // var query = new Parse.Query(g.ParseGameBoard);
+      // query.equalTo("userID", privateData.userID);
+      // query.find({
+      //   success: function(results) {
+      //     results.map(function(val) {
+      //       g.board = val.get('board');
+      //       display.refresh();
+      //     });
+      //   },
+      //   error: function(error) {
+      //     alert("Error: " + error.code + " " + error.message);
+      //   }
+      // });
+      console.log("test");
       display.showProflePicure(privateData.userID);
 
       if(data.request_ids) {
