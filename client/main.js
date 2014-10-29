@@ -36,7 +36,9 @@ var __OPPONENT = __OPPONENT || {};
     var graphics = g.game.add.graphics(0, 0);
     drawBoard(graphics);
     drawPieces(graphics);
+
     display.refresh = _.partial(drawPieces, graphics);
+
     g.game.input.onDown.add(_.partial(anyClick, graphics), display);
   }
 

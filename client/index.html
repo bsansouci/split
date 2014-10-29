@@ -85,8 +85,9 @@
       //     alert("Error: " + error.code + " " + error.message);
       //   }
       // });
-      console.log("test");
+
       display.showProflePicure(privateData.userID);
+      display.refresh();
 
       if(data.request_ids) {
         FB.api(privateData.userID + '/apprequests?fields=id,application,to,from,data,message,action_type,object,created_time&access_token=' + privateData.accessToken, function(val) {
