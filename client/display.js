@@ -14,6 +14,7 @@ var start = _.partial(function(g, display, logic, opponent, parseObject) {
         g.GAME_SCALE*g.BOARD_SIZE, Phaser.CANVAS, 'checkers', { preload: preload, create: create });
 
   function preload() {
+    console.log(g.opponentId);
     console.log(parseObject);
     if (typeof parseObject !== undefined){
       logic.initialize();
@@ -27,7 +28,7 @@ var start = _.partial(function(g, display, logic, opponent, parseObject) {
     g.game.load.image('black-king', 'assets/pics/black-king.png');
     try {
       g.game.load.image('profile',
-        'http://graph.facebook.com/'+g.opponentId+
+        'http://graph.facebook.com/'+g.opponentID+
         '/picture?height=110&width=110');
     } catch (e) {
       g.game.load.image('profile', 'assets/pics/red-piece.png');
@@ -54,6 +55,11 @@ var start = _.partial(function(g, display, logic, opponent, parseObject) {
       }
     }
     sprite = g.game.add.sprite(g.BOARD_SIZE*g.GAME_SCALE+20, 20, 'profile');
+    var style = { font: "20px Arial", fill: "#FFFFFF", align: "center" };
+    var x = g.BOARD_SIZE*g.GAME_SCALE + 15;
+    console.log(g.opponentName);
+    console.log(wordWrap(g.opponentName, 12));
+    g.game.add.text(x, 140, wordWrap(g.opponentName, 12), style);
   }
 
   function anyClick(graphics, pointer) {
@@ -181,5 +187,23 @@ var start = _.partial(function(g, display, logic, opponent, parseObject) {
       }
     }
   }
+
+  function wordWrap(str, maxWidth){
+    var broken = str.split(" ");
+    var count = 0;
+    var retStr = "";
+    for (var i = 0; i < broken.length; i++){
+      var word = broken[i];
+      count += word.length + 1;
+      if (count > maxWidth){
+        retStr += word + "\n";
+        count = 0;
+      } else {
+        retStr += word + " ";
+      }
+    }
+    return retStr;
+  }
+
   return display;
 },__GLOBAL, __DISPLAY, __LOGIC, __OPPONENT);

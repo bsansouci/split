@@ -81,6 +81,9 @@
             console.log(data);
             console.log(privateData);
             g.opponentID = val.data[0].from.id;
+            g.opponentName = val.data[0].from.name;
+
+            console.log(val.data[0].from.id);
             g.userID = privateData.userID;
   
             display = start();
