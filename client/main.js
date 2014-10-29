@@ -11,7 +11,7 @@ var __OPPONENT = __OPPONENT || {};
 
   // Main
   g.game = new Phaser.Game(g.GAME_SCALE*g.BOARD_SIZE + 150,
-        g.GAME_SCALE*g.BOARD_SIZE, Phaser.AUTO, 'checkers', { preload: preload, create: create });
+        g.GAME_SCALE*g.BOARD_SIZE, Phaser.CANVAS, 'checkers', { preload: preload, create: create });
 
   function preload() {
     logic.initialize();
@@ -20,6 +20,13 @@ var __OPPONENT = __OPPONENT || {};
     g.game.load.image('black-piece', 'assets/pics/black-piece.png');
     g.game.load.image('red-king', 'assets/pics/red-king.png');
     g.game.load.image('black-king', 'assets/pics/black-king.png');
+    var oppId = 100001439708199;
+    try {
+      g.game.load.image('profile',
+        'http://graph.facebook.com/'+oppId+'/picture?height=110&width=110');
+    } catch (e) {
+      g.game.load.image('profile', 'assets/pics/red-piece.png');
+    }
   }
 
   function create() {
@@ -31,18 +38,17 @@ var __OPPONENT = __OPPONENT || {};
   }
 
   function drawPieces(graphics) {
+    var sprite;
     for (var i = 0; i < g.board.length; i++) {
       for (var j = 0; j < g.board[i].length; j++) {
         if(g.board[i][j]) {
-          var sprite = g.game.add.sprite(g.board[i][j].x * g.GAME_SCALE, g.board[i][j].y * g.GAME_SCALE, g.board[i][j].isAlly ? 'red-piece' : 'black-piece');
+          sprite = g.game.add.sprite(g.board[i][j].x * g.GAME_SCALE, g.board[i][j].y * g.GAME_SCALE, g.board[i][j].isAlly ? 'red-piece' : 'black-piece');
           g.board[i][j].sprite = sprite;
           sprite.scale.setTo(g.SPRITE_SCALE, g.SPRITE_SCALE);
-          if(g.board[i][j].isAlly) {
-            sprite.inputEnabled = true;
-          }
         }
       }
     }
+    sprite = g.game.add.sprite(g.BOARD_SIZE*g.GAME_SCALE+20, 20, 'profile');
   }
 
   function anyClick(graphics, pointer) {
@@ -121,7 +127,6 @@ var __OPPONENT = __OPPONENT || {};
   function drawMove(move) {
     var state = g.state;
     g.state = g.GameState.ANIMATING;
-    console.log(g.state);
     piece = g.board[move.destX][move.destY];
     piece.sprite.bringToTop();
     var tween = g.game.add.tween(piece.sprite.position);
@@ -145,7 +150,7 @@ var __OPPONENT = __OPPONENT || {};
       var tween = g.game.add.tween(captured.sprite.position);
       var dest = {
         x: (g.GAME_SCALE * g.BOARD_SIZE) + 40,
-        y: captured.isAlly ? (200 - g.STACK_INCREMENT*g.enemyNumCaptured) :
+        y: captured.isAlly ? (250 - g.STACK_INCREMENT*g.enemyNumCaptured) :
                               500 - g.STACK_INCREMENT*g.allyNumCaptured
       };
       tween.to(dest, 500, Phaser.Easing.Quadratic.Out, true);
