@@ -5,6 +5,7 @@ var __OPPONENT = __OPPONENT || {};
 (function(g, display, logic, opponent) {
   // Public functions
   display.drawMove = drawMove;
+  display.showProflePicure = showProflePicure;
 
   // This function is instantiated in create()
   display.refresh = null;
@@ -13,6 +14,14 @@ var __OPPONENT = __OPPONENT || {};
   g.game = new Phaser.Game(g.GAME_SCALE*g.BOARD_SIZE + 150,
         g.GAME_SCALE*g.BOARD_SIZE, Phaser.CANVAS, 'checkers', { preload: preload, create: create });
 
+  function showProflePicure(id) {
+    try {
+      g.game.load.image('profile',
+        'http://graph.facebook.com/'+id+'/picture?height=110&width=110');
+    } catch (e) {
+      console.log("Couldn't load profile picture for ", id);
+    }
+  }
   function preload() {
     logic.initialize();
 
@@ -20,14 +29,7 @@ var __OPPONENT = __OPPONENT || {};
     g.game.load.image('black-piece', 'assets/pics/black-piece.png');
     g.game.load.image('red-king', 'assets/pics/red-king.png');
     g.game.load.image('black-king', 'assets/pics/black-king.png');
-    var davidsId = 100001439708199;
-    console.log(g.userID);
-    try {
-      g.game.load.image('profile',
-        'http://graph.facebook.com/'+g.userID+'/picture?height=110&width=110');
-    } catch (e) {
-      g.game.load.image('profile', 'assets/pics/red-piece.png');
-    }
+    g.game.load.image('profile', 'assets/pics/red-piece.png');
   }
 
   function create() {
