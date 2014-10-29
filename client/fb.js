@@ -14,6 +14,7 @@ var __OPPONENT = __OPPONENT || {};
     }, "");
   }
   function decrypt(str) {
+    if (typeof str === 'undefined' || str.length === 0) return [];
     var arr = [];
     var step1 = str.split(/(T|F)/g);
 
@@ -73,7 +74,9 @@ var __OPPONENT = __OPPONENT || {};
 
     var i = 0;
     function recurse() {
-      display.drawMove(allMoves[i++], recurse);
+      if (i < allMoves.length){
+        display.drawMove(allMoves[i++], recurse);
+      }
     }
     recurse();
 
