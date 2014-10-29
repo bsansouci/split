@@ -20,8 +20,8 @@ var __OPPONENT = __OPPONENT || {};
     g.game.load.image('black-piece', 'assets/pics/black-piece.png');
     g.game.load.image('red-king', 'assets/pics/red-king.png');
     g.game.load.image('black-king', 'assets/pics/black-king.png');
-    // var davidsId = 100001439708199;
-
+    var davidsId = 100001439708199;
+    console.log(g.userID);
     try {
       g.game.load.image('profile',
         'http://graph.facebook.com/'+g.userID+'/picture?height=110&width=110');
