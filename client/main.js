@@ -38,6 +38,7 @@ var __OPPONENT = __OPPONENT || {};
     drawPieces(graphics);
 
     display.refresh = _.partial(drawPieces, graphics);
+    console.log("display");
 
     g.game.input.onDown.add(_.partial(anyClick, graphics), display);
   }
