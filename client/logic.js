@@ -31,10 +31,6 @@ var __DISPLAY = __DISPLAY || {};
     return (x >= 0 && y >= 0 && x < g.BOARD_SIZE && y < g.BOARD_SIZE);
   }
 
-  function inc(a) {
-    return a >= 0 ? a + 1 : a - 1;
-  }
-
   function reverseMove(move){
     move.srcX = g.BOARD_SIZE - 1 - move.srcX;
     move.srcY = g.BOARD_SIZE - 1 - move.srcY;
