@@ -43,14 +43,20 @@ var __OPPONENT = __OPPONENT || {};
       return;
     }
     var b = new g.ParseGameBoard();
-
-    // b.save({
-    //   userID: g.userID,
-    //   opponentID: g.opponentID,
-    //   board: g.board
-    // }).then(function(object) {
-    //   console.log(object);
-    // });
+    // boardsize
+    // numrow
+    // board
+    // allyNumCaptured: 0,
+    // enemyNumCaptured: 0
+    b.save({
+      allyNumCaptured: g.allyNumCaptured,
+      enemyNumCaptured:g.enemyNumCaptured,
+      board: g.boardCopy,
+      BOARD_SIZE: g.BOARD_SIZE,
+      NUM_ROWS: g.NUM_ROWS
+    }).then(function(object) {
+      console.log(object);
+    });
     // FB.ui({method: 'apprequests',
     //   message: 'This is a newer message.',
     //   to: '1216678154',
@@ -64,7 +70,13 @@ var __OPPONENT = __OPPONENT || {};
   function parseAndClear(obj) {
     var allMoves = decrypt(obj.data);
     logic.makeEnemyMoves(allMoves);
-    allMoves.map(display.drawMove);
+
+    var i = 0;
+    function recurse() {
+      display.drawMove(allMoves[i++], recurse);
+    }
+    recurse();
+
     console.log("THERE IS A LINE OF CODE THAT NEEDS TO BE UNCOMMENTED");
     // this.clearEvent(obj.id);
   }

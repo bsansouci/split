@@ -15,6 +15,11 @@
 </head>
 <body>
 <script>
+  var __LOGIC = __LOGIC || {};
+  var __DISPLAY = __DISPLAY || {};
+  var __OPPONENT = __OPPONENT || {};
+  var __GLOBAL = __GLOBAL || {};
+
   (function(g, display, logic, opponent) {
     Parse.initialize("nf0GIoSnS5rGiblTT59PZ9B3j4WOAmWIXqta2lbT", "zliwaIweOFowVIvAS4Kprxc3yrbVS7fHg2IDdVy4");
     g.ParseGameBoard = Parse.Object.extend("gameboard");
@@ -27,26 +32,15 @@
         frictionlessRequests : true
       });
 
-      function onLogin(response) {
-        if (response.status == 'connected') {
-          // FB.api('/me?fields=id', function(data) {
-            // var welcomeBlock = document.getElementById('fb-welcome');
-            // welcomeBlock.innerHTML = 'Hello, ' + data.first_name + '!';
-            onConnected(FB.getAuthResponse());
-          // });
-        }
-      }
-
-
       FB.getLoginStatus(function(response) {
         // Check login status on load, and if the user is
         // already logged in, go directly to the welcome message.
         if (response.status == 'connected') {
-          onLogin(response);
+          onConnected(FB.getAuthResponse());
         } else {
           // Otherwise, show Login dialog first.
-          FB.login(function(response) {
-            onLogin(response);
+          FB.login(function(rep) {
+            onConnected(FB.getAuthResponse());
           }, {scope: 'user_friends, email'});
         }
       });
@@ -72,29 +66,15 @@
         data[tmp[0]] = tmp[1];
       });
 
-      // var query = new Parse.Query(g.ParseGameBoard);
-      // query.equalTo("userID", privateData.userID);
-      // query.find({
-      //   success: function(results) {
-      //     results.map(function(val) {
-      //       g.board = val.get('board');
-      //       display.refresh();
-      //     });
-      //   },
-      //   error: function(error) {
-      //     alert("Error: " + error.code + " " + error.message);
-      //   }
-      // });
-
-
       // Ask to draw this profile picture
-      display.showProflePicure(privateData.userID);
-      display.refresh();
+      // display.showProflePicure(privateData.userID);
+      // display.refresh();
 
       if(data.request_ids) {
         FB.api(privateData.userID + '/apprequests?fields=id,application,to,from,data,message,action_type,object,created_time&access_token=' + privateData.accessToken, function(val) {
           g.opponentID = data[0].from.id;
           g.userID = privateData.userID;
+
           opponent.parseAndClear(val.data[0]);
         });
       }

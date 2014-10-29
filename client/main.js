@@ -130,7 +130,7 @@ var __OPPONENT = __OPPONENT || {};
     g.currentPossibleMoves = possibleMoves;
   }
 
-  function drawMove(move) {
+  function drawMove(move, callback) {
     var state = g.state;
     g.state = g.GameState.ANIMATING;
     piece = g.board[move.destX][move.destY];
@@ -138,10 +138,10 @@ var __OPPONENT = __OPPONENT || {};
     var tween = g.game.add.tween(piece.sprite.position);
     var dest = {x: move.destX * g.GAME_SCALE, y: move.destY * g.GAME_SCALE};
     tween.to(dest, 500, Phaser.Easing.Quadratic.Out, true);
-    tween.onComplete.add(_.partial(afterMove, move, state), this);
+    tween.onComplete.add(_.partial(afterMove, move, state, callback), this);
   }
 
-  function afterMove(move, formerState){
+  function afterMove(move, formerState, callback){
     // Convert to king when applicable
     if (piece.isKing && !!piece.sprite.key.match("piece")){
       piece.sprite.loadTexture((piece.isAlly ? "red" : "black") +"-king");
@@ -164,6 +164,8 @@ var __OPPONENT = __OPPONENT || {};
     } else {
       g.state = formerState;
     }
+
+    if(callback) callback();
   }
 
 
