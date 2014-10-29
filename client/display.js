@@ -2,7 +2,7 @@ var LOGIC = LOGIC || {};
 var __DISPLAY = __DISPLAY || {};
 var __OPPONENT = __OPPONENT || {};
 
-var start = _.partial(function(g, display, logic, opponent, parseObject) {
+var startGame = _.partial(function(g, display, logic, opponent, parseObject) {
   // Public functions
   display.drawMove = drawMove;
 
@@ -19,7 +19,13 @@ var start = _.partial(function(g, display, logic, opponent, parseObject) {
     if (typeof parseObject !== undefined){
       logic.initialize();
     } else {
-      g.board = parseObject.board;
+      g.userID = parseObject.userID;
+      g.opponentID = parseObject.opponentID;
+      g.allyNumCaptured = parseObject.allyNumCaptured;
+      g.enemyNumCaptured = parseObject.enemyNumCaptured;
+      g.board = parseObject.boardCopy;
+      g.BOARD_SIZE = parseObject.BOARD_SIZE;
+      g.NUM_ROWS = parseObject.NUM_ROWS;
     }
 
     g.game.load.image('red-piece', 'assets/pics/red-piece.png');
