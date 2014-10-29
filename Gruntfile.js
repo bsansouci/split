@@ -10,12 +10,12 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON('package.json'),
 
     watch: {
-      files: ["client/**/*.js"],
+      files: ["client/**/*"],
       livereload: {
         options: {
           livereload: LIVERELOAD_PORT
         },
-        files: ["client/**/*.js"]
+        files: ["client/**/*"]
       }
     },
     connect: {

@@ -20,10 +20,11 @@ var __OPPONENT = __OPPONENT || {};
     g.game.load.image('black-piece', 'assets/pics/black-piece.png');
     g.game.load.image('red-king', 'assets/pics/red-king.png');
     g.game.load.image('black-king', 'assets/pics/black-king.png');
-    var oppId = 100001439708199;
+    // var davidsId = 100001439708199;
+
     try {
       g.game.load.image('profile',
-        'http://graph.facebook.com/'+oppId+'/picture?height=110&width=110');
+        'http://graph.facebook.com/'+g.userID+'/picture?height=110&width=110');
     } catch (e) {
       g.game.load.image('profile', 'assets/pics/red-piece.png');
     }
@@ -95,7 +96,7 @@ var __OPPONENT = __OPPONENT || {};
   }
 
   function submitMove(){
-    // opponent.sendTurn();
+    opponent.sendTurn();
     g.currentPossibleMoves = [];
     g.moveHistory = [];
   }

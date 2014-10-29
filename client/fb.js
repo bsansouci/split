@@ -3,13 +3,16 @@ var __DISPLAY = __DISPLAY || {};
 var __OPPONENT = __OPPONENT || {};
 
 (function(g, display, logic, opponent) {
+  opponent.sendTurn = sendTurn;
+  opponent.parseAndClear = parseAndClear;
+  opponent.clearEvent = clearEvent;
+
   function encrypt(arr) {
     return arr.reduce(function(acc, val) {
       return acc += val.srcX + "." + val.srcY + ":" +
                     val.destX + "." + val.destY + (val.captures ? "T" : "F");
     }, "");
   }
-
   function decrypt(str) {
     var arr = [];
     var step1 = str.split(/(T|F)/g);
@@ -32,34 +35,44 @@ var __OPPONENT = __OPPONENT || {};
 
     return arr;
   }
-  this.sendTurn = function() {
+
+  function sendTurn() {
     var str = encrypt(g.moveHistory);
     if(str.length > 255) {
       console.log("ERROR: moveHistory parsed is > 255 chars");
       return;
     }
-    FB.ui({method: 'apprequests',
-      message: 'This is a newer message.',
-      to: '1216678154',
-      action_type:'turn',
-      data: str
-    }, function(response){
-      console.log(response);
-    });
-  };
+    var b = new g.ParseGameBoard();
 
-  this.parseAndClear = function(obj) {
+    // b.save({
+    //   userID: g.userID,
+    //   opponentID: g.opponentID,
+    //   board: g.board
+    // }).then(function(object) {
+    //   console.log(object);
+    // });
+    // FB.ui({method: 'apprequests',
+    //   message: 'This is a newer message.',
+    //   to: '1216678154',
+    //   action_type:'turn',
+    //   data: str
+    // }, function(response){
+    //   console.log(response);
+    // });
+  }
+
+  function parseAndClear(obj) {
     var allMoves = decrypt(obj.data);
     logic.makeEnemyMoves(allMoves);
-    allMoves.map(__display.drawMove);
+    allMoves.map(display.drawMove);
     console.log("THERE IS A LINE OF CODE THAT NEEDS TO BE UNCOMMENTED");
     // this.clearEvent(obj.id);
-  };
+  }
 
-  this.clearEvent = function(requestId) {
+  function clearEvent(requestId) {
     FB.api(requestId, 'delete', function(response) {
       console.log(response);
     });
-  };
+  }
   return this;
 })(__GLOBAL, __DISPLAY, __LOGIC, __OPPONENT);

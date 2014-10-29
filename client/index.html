@@ -8,8 +8,8 @@
 <script type="text/javascript" src="piece.js"></script>
 <script type="text/javascript" src="logic.js"></script>
 <script type="text/javascript" src="move.js"></script>
-<script type="text/javascript" src="fb.js"></script>
 <script type="text/javascript" src="main.js"></script>
+<script type="text/javascript" src="fb.js"></script>
 
   <title>Split</title>
 </head>
@@ -17,22 +17,7 @@
 <script>
   (function(g, display, logic, opponent) {
     Parse.initialize("nf0GIoSnS5rGiblTT59PZ9B3j4WOAmWIXqta2lbT", "zliwaIweOFowVIvAS4Kprxc3yrbVS7fHg2IDdVy4");
-    var ParseGameBoard = Parse.Object.extend("gameboard");
-
-    window.onunload = window.onbeforeunload = function() {
-      var b = new ParseGameBoard();
-      // var id = g.userID.length > g.opponentID.length ? "" + g.userID + g.opponentID : "" + g.opponentID + g.userID;
-
-      b.save({
-        userID: id,
-        opponentID: g.opponentID,
-        board: g.board
-      }).then(function(object) {
-        console.log(object);
-        alert("yay! it worked");
-      });
-      return null;
-    };
+    g.ParseGameBoard = Parse.Object.extend("gameboard");
 
     window.fbAsyncInit = function() {
       FB.init({
@@ -87,7 +72,7 @@
         data[tmp[0]] = tmp[1];
       });
 
-      var query = new Parse.Query(ParseGameBoard);
+      var query = new Parse.Query(g.ParseGameBoard);
       query.equalTo("userID", privateData.userID);
       query.find({
         success: function(results) {
