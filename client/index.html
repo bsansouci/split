@@ -86,9 +86,9 @@
         }
       });
 
+      g.userID = privateData.userID;
       if(data.request_ids) {
         FB.api(privateData.userID + '/apprequests?fields=id,application,to,from,data,message,action_type,object,created_time&access_token=' + privateData.accessToken, function(val) {
-          g.userID = privateData.userID;
           g.opponentID = data[0].from.id;
           opponent.parseAndClear(val.data[0]);
         });
