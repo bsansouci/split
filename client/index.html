@@ -8,7 +8,7 @@
 <script type="text/javascript" src="piece.js"></script>
 <script type="text/javascript" src="logic.js"></script>
 <script type="text/javascript" src="move.js"></script>
-<script type="text/javascript" src="main.js"></script>
+<script type="text/javascript" src="display.js"></script>
 <script type="text/javascript" src="fb.js"></script>
 
   <title>Split</title>
@@ -23,6 +23,7 @@
   (function(g, display, logic, opponent) {
     Parse.initialize("nf0GIoSnS5rGiblTT59PZ9B3j4WOAmWIXqta2lbT", "zliwaIweOFowVIvAS4Kprxc3yrbVS7fHg2IDdVy4");
     g.ParseGameBoard = Parse.Object.extend("gameboard");
+    console.log("testinit");
 
     window.fbAsyncInit = function() {
       FB.init({
@@ -35,6 +36,7 @@
       FB.getLoginStatus(function(response) {
         // Check login status on load, and if the user is
         // already logged in, go directly to the welcome message.
+        console.log("getlogin");
         if (response.status == 'connected') {
           onConnected(FB.getAuthResponse());
         } else {
@@ -56,9 +58,13 @@
 
 
     function onConnected(privateData) {
+      console.log("connected");
       var p = document.createElement('a');
       p.href = window.location.href;
-      var allGetElements = p.search.split("?")[1].split("&");
+      var allGetElements = [];
+      if (p.search.length > 0){
+        allGetElements = p.search.substring(1).split("&");
+      }
 
       var data = {};
       allGetElements.map(function(val) {
@@ -75,13 +81,18 @@
           g.opponentID = data[0].from.id;
           g.userID = privateData.userID;
 
+          display = start();
           opponent.parseAndClear(val.data[0]);
         });
+      } else {
+		  // Pick game to resume or start new game
+          display = start();
       }
     }
 
   })(__GLOBAL, __DISPLAY, __LOGIC, __OPPONENT);
 </script>
 <h1 id="fb-welcome"></h1>
+<div id="fb-root"></div>
 </body>
 </html>

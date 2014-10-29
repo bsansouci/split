@@ -5,6 +5,7 @@ var __GLOBAL = (function() {
     BOARD_SIZE: 8,
     NUM_ROWS: 3,
     STACK_INCREMENT: 10,
+    APP_ID: 1468388983449543,
     GameState: {
       NEW_MOVE: "newMove",
       CONTINUE: "continue",
@@ -17,7 +18,8 @@ var __GLOBAL = (function() {
     currentPossibleMoves: [],
     game: null,
     allyNumCaptured: 0,
-    enemyNumCaptured: 0
+    enemyNumCaptured: 0,
+    opponentId: 100001439708199
   };
   obj.state = obj.GameState.NEW_MOVE;
 

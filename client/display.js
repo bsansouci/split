@@ -2,10 +2,9 @@ var LOGIC = LOGIC || {};
 var __DISPLAY = __DISPLAY || {};
 var __OPPONENT = __OPPONENT || {};
 
-(function(g, display, logic, opponent) {
+var start = _.partial(function(g, display, logic, opponent, parseObject) {
   // Public functions
   display.drawMove = drawMove;
-  display.showProflePicure = showProflePicure;
 
   // This function is instantiated in create()
   display.refresh = null;
@@ -14,32 +13,32 @@ var __OPPONENT = __OPPONENT || {};
   g.game = new Phaser.Game(g.GAME_SCALE*g.BOARD_SIZE + 150,
         g.GAME_SCALE*g.BOARD_SIZE, Phaser.CANVAS, 'checkers', { preload: preload, create: create });
 
-  function showProflePicure(id) {
-    try {
-      g.game.load.image('profile',
-        'http://graph.facebook.com/'+id+'/picture?height=110&width=110');
-    } catch (e) {
-      console.log("Couldn't load profile picture for ", id);
-    }
-  }
   function preload() {
-    logic.initialize();
+    console.log(parseObject);
+    if (typeof parseObject !== undefined){
+      logic.initialize();
+    } else {
+      g.board = parseObject.board;
+    }
 
     g.game.load.image('red-piece', 'assets/pics/red-piece.png');
     g.game.load.image('black-piece', 'assets/pics/black-piece.png');
     g.game.load.image('red-king', 'assets/pics/red-king.png');
     g.game.load.image('black-king', 'assets/pics/black-king.png');
-    g.game.load.image('profile', 'http://graph.facebook.com/100001439708199/picture?height=110&width=110');
+    try {
+      g.game.load.image('profile',
+        'http://graph.facebook.com/'+g.opponentId+
+        '/picture?height=110&width=110');
+    } catch (e) {
+      g.game.load.image('profile', 'assets/pics/red-piece.png');
+    }
   }
 
   function create() {
     var graphics = g.game.add.graphics(0, 0);
     drawBoard(graphics);
     drawPieces(graphics);
-
     display.refresh = _.partial(drawPieces, graphics);
-    console.log("display");
-
     g.game.input.onDown.add(_.partial(anyClick, graphics), display);
   }
 
@@ -130,7 +129,7 @@ var __OPPONENT = __OPPONENT || {};
     g.currentPossibleMoves = possibleMoves;
   }
 
-  function drawMove(move, callback) {
+  function drawMove(move) {
     var state = g.state;
     g.state = g.GameState.ANIMATING;
     piece = g.board[move.destX][move.destY];
@@ -138,10 +137,10 @@ var __OPPONENT = __OPPONENT || {};
     var tween = g.game.add.tween(piece.sprite.position);
     var dest = {x: move.destX * g.GAME_SCALE, y: move.destY * g.GAME_SCALE};
     tween.to(dest, 500, Phaser.Easing.Quadratic.Out, true);
-    tween.onComplete.add(_.partial(afterMove, move, state, callback), this);
+    tween.onComplete.add(_.partial(afterMove, move, state), this);
   }
 
-  function afterMove(move, formerState, callback){
+  function afterMove(move, formerState){
     // Convert to king when applicable
     if (piece.isKing && !!piece.sprite.key.match("piece")){
       piece.sprite.loadTexture((piece.isAlly ? "red" : "black") +"-king");
@@ -164,8 +163,6 @@ var __OPPONENT = __OPPONENT || {};
     } else {
       g.state = formerState;
     }
-
-    if(callback) callback();
   }
 
 
@@ -185,4 +182,4 @@ var __OPPONENT = __OPPONENT || {};
     }
   }
   return display;
-})(__GLOBAL, __DISPLAY, __LOGIC, __OPPONENT);
+},__GLOBAL, __DISPLAY, __LOGIC, __OPPONENT);
