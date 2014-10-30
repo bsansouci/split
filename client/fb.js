@@ -5,7 +5,7 @@ var __OPPONENT = __OPPONENT || {};
 (function(g, display, logic, opponent) {
   Parse.initialize("nf0GIoSnS5rGiblTT59PZ9B3j4WOAmWIXqta2lbT", "zliwaIweOFowVIvAS4Kprxc3yrbVS7fHg2IDdVy4");
   g.ParseGameBoard = Parse.Object.extend("gameboard");
-  
+
   window.fbAsyncInit = function() {
     var timeout = setTimeout(couldntConnect, 5000);
     console.log("init");
@@ -66,21 +66,24 @@ var __OPPONENT = __OPPONENT || {};
           success: function(results) {
             if(results.length === 0) {
               console.log("No board found");
-              startGame();
-              parseAndClear(val.data[0]);
+              startGame(null, function() {
+                parseAndClear(val.data[0]);
+              });
               return;
             }
             if(results.length > 1) {
               // LOL
               console.log("Too many boards found");
             }
-            startGame(results[0]);
-            parseAndClear(val.data[0]);
+            startGame(results[0], function() {
+              parseAndClear(val.data[0]);
+            });
           },
           error: function(error) {
             console.log("No board found");
-            startGame();
-            parseAndClear(val.data[0]);
+            startGame(function() {
+              parseAndClear(val.data[0]);
+            });
           }
         });
       });

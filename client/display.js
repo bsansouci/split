@@ -2,7 +2,7 @@ var LOGIC = LOGIC || {};
 var __DISPLAY = __DISPLAY || {};
 var __OPPONENT = __OPPONENT || {};
 
-var startGame = _.partial(function(g, display, logic, opponent, parseObject) {
+var startGame = _.partial(function(g, display, logic, opponent, parseObject, callback) {
   // Public functions
   display.drawMove = drawMove;
 
@@ -14,10 +14,11 @@ var startGame = _.partial(function(g, display, logic, opponent, parseObject) {
         g.GAME_SCALE*g.BOARD_SIZE, Phaser.CANVAS, 'checkers', { preload: preload, create: create });
 
   function preload() {
-    console.log("parseObject:" + parseObject);
-    if ((parseObject !== undefined) &&
-      (parseObject.board) &&
-      (parseObject.move))
+    console.log("parseObject:", parseObject);
+    if (parseObject &&
+        parseObject !== undefined &&
+        parseObject.board &&
+        parseObject.move)
     {
       g.board = parseObject.board;
       g.userID = parseObject.userID;
@@ -50,6 +51,11 @@ var startGame = _.partial(function(g, display, logic, opponent, parseObject) {
     drawPieces(graphics);
     display.refresh = _.partial(drawPieces, graphics);
     g.game.input.onDown.add(_.partial(anyClick, graphics), display);
+
+    // Since we're loading asynchronously, we might need a callback (for
+    // example when receiving a notification and needing to display the
+    // opponnent's move)
+    if(callback) callback();
   }
 
   function drawPieces(graphics) {
@@ -74,6 +80,8 @@ var startGame = _.partial(function(g, display, logic, opponent, parseObject) {
     // console.log("State: ", g.state, " Pos: ", pos, "currentPossibleMoves", g.currentPossibleMoves);
     switch(g.state) {
       case g.GameState.NEW_MOVE:
+        // We make a copy of the board that we're going to send to parse
+        g.boardCopy = logic.cloneBoard();
         g.state = g.GameState.CONTINUE;
         if(g.board[pos.x][pos.y]) return clickedOnPiece(pos.x, pos.y, graphics);
         break;

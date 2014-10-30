@@ -9,6 +9,7 @@ var __DISPLAY = __DISPLAY || {};
   logic.pieceCaptured = pieceCaptured;
   logic.getMiddle = getMiddle;
   logic.makeEnemyMoves = makeEnemyMoves;
+  logic.cloneBoard = cloneBoard;
 
   function initialize(){
     for (var i = 0; i < g.BOARD_SIZE/2; i++){
@@ -158,8 +159,7 @@ var __DISPLAY = __DISPLAY || {};
   }
 
   function cloneBoard() {
-    var newBoard;
-    newBoard = new Array(g.BOARD_SIZE);
+    var newBoard = new Array(g.BOARD_SIZE);
 
     for (var i = 0; i < g.BOARD_SIZE; i++){
       newBoard[i] = new Array(g.BOARD_SIZE);
@@ -171,8 +171,6 @@ var __DISPLAY = __DISPLAY || {};
           p.isAlly = g.board[i][j].isAlly;
           p.isKing = g.board[i][j].isKing;
           newBoard[i][j] = p;
-        } else {
-          newBoard[i][j] = null;
         }
       }
     }
