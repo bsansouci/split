@@ -20,6 +20,13 @@ var startGame = _.partial(function(g, display, logic, opponent, parseObject) {
       (parseObject.move))
     {
       g.board = parseObject.board;
+      g.userID = parseObject.userID;
+      g.opponentID = parseObject.opponentID;
+      g.allyNumCaptured = parseObject.allyNumCaptured;
+      g.enemyNumCaptured = parseObject.enemyNumCaptured;
+      g.board = parseObject.boardCopy;
+      g.BOARD_SIZE = parseObject.BOARD_SIZE;
+      g.NUM_ROWS = parseObject.NUM_ROWS;
     } else {
       logic.initialize();
     }

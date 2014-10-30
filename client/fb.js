@@ -3,6 +3,92 @@ var __DISPLAY = __DISPLAY || {};
 var __OPPONENT = __OPPONENT || {};
 
 (function(g, display, logic, opponent) {
+  Parse.initialize("nf0GIoSnS5rGiblTT59PZ9B3j4WOAmWIXqta2lbT", "zliwaIweOFowVIvAS4Kprxc3yrbVS7fHg2IDdVy4");
+  g.ParseGameBoard = Parse.Object.extend("gameboard");
+  
+  var timeout = setTimeout(couldntConnect, 10000);
+  window.fbAsyncInit = function() {
+    console.log("init");
+    FB.init({
+      appId      : g.APP_ID,
+      xfbml      : true,
+      version    : 'v2.1',
+      frictionlessRequests : true
+    });
+
+    FB.getLoginStatus(function(response) {
+      clearTimeout(timeout);
+      // Check login status on load, and if the user is
+      // already logged in, go directly to the welcome message.
+      console.log("getlogin");
+      if (response.status == 'connected') {
+        onConnected(FB.getAuthResponse());
+      } else {
+        // Otherwise, show Login dialog first.
+        FB.login(function(rep) {
+          onConnected(FB.getAuthResponse());
+        }, {scope: 'user_friends, email'});
+      }
+    });
+  };
+
+  function couldntConnect() {
+    console.log("Couldn't Connect");
+    startGame();
+  }
+
+  function onConnected(privateData) {
+    console.log("connected");
+    var p = document.createElement('a');
+    p.href = window.location.href;
+    var allGetElements = [];
+    if (p.search.length > 0){
+      allGetElements = p.search.substring(1).split("&");
+    }
+
+    var data = {};
+    allGetElements.map(function(val) {
+      var tmp = val.split("=");
+      data[tmp[0]] = tmp[1];
+    });
+
+    if(data.request_ids) {
+      FB.api(privateData.userID + '/apprequests?fields=id,application,to,from,data,message,action_type,object,created_time&access_token=' + privateData.accessToken,          function(val) {
+        // This will be used to get the profile picture
+        g.opponentID = val.data[0].from.id;
+        g.opponentName = val.data[0].from.name;
+        g.userID = privateData.userID;
+
+        var query = new Parse.Query(g.ParseGameBoard);
+        query.equalTo("userID", g.userID);
+        query.equalTo("opponentID", g.opponentID);
+        query.find({
+          success: function(results) {
+            if(results.length === 0) {
+              console.log("No board found");
+              startGame();
+              parseAndClear(val.data[0]);
+              return;
+            }
+            if(results.length > 1) {
+              // LOL
+              console.log("Too many boards found");
+            }
+            startGame(results[0]);
+            parseAndClear(val.data[0]);
+          },
+          error: function(error) {
+            console.log("No board found");
+            startGame();
+            parseAndClear(val.data[0]);
+          }
+        });
+      });
+    } else {
+      // Pick game to resume or start new game
+      startGame();
+    }
+  }
   opponent.sendTurn = sendTurn;
   opponent.parseAndClear = parseAndClear;
   opponent.clearEvent = clearEvent;
@@ -43,13 +129,11 @@ var __OPPONENT = __OPPONENT || {};
       console.log("ERROR: moveHistory parsed is > 255 chars");
       return;
     }
+
     var b = new g.ParseGameBoard();
-    // boardsize
-    // numrow
-    // board
-    // allyNumCaptured: 0,
-    // enemyNumCaptured: 0
     b.save({
+      userID: g.userID,
+      opponentID: g.opponentID,
       allyNumCaptured: g.allyNumCaptured,
       enemyNumCaptured:g.enemyNumCaptured,
       board: g.boardCopy,
@@ -80,7 +164,7 @@ var __OPPONENT = __OPPONENT || {};
     }
     recurse();
 
-    console.log("THERE IS A LINE OF CODE THAT NEEDS TO BE UNCOMMENTED");
+    console.log("A LINE OF CODE NEEDS TO BE UNCOMMENTED (clearEvent)");
     // this.clearEvent(obj.id);
   }
 

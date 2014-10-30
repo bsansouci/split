@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<script type="text/javascript" id="facebook-jssdk" src="//connect.facebook.net/en_US/sdk.js"></script>
 <script type="text/javascript" src="libs/phaser.js"></script>
 <script src="//www.parsecdn.com/js/parse-1.3.1.min.js"></script>
 <script type="text/javascript" src="libs/lodash.js"></script>
@@ -14,89 +15,6 @@
   <title>Split</title>
 </head>
 <body>
-<script>
-  var __LOGIC = __LOGIC || {};
-  var __DISPLAY = __DISPLAY || {};
-  var __OPPONENT = __OPPONENT || {};
-  var __GLOBAL = __GLOBAL || {};
-
-  (function(g, display, logic, opponent) {
-    Parse.initialize("nf0GIoSnS5rGiblTT59PZ9B3j4WOAmWIXqta2lbT", "zliwaIweOFowVIvAS4Kprxc3yrbVS7fHg2IDdVy4");
-    g.ParseGameBoard = Parse.Object.extend("gameboard");
-    console.log("testinit");
-
-    window.fbAsyncInit = function() {
-      FB.init({
-        appId      : '1468388983449543',
-        xfbml      : true,
-        version    : 'v2.1',
-        frictionlessRequests : true
-      });
-
-      FB.getLoginStatus(function(response) {
-        // Check login status on load, and if the user is
-        // already logged in, go directly to the welcome message.
-        console.log("getlogin");
-        if (response.status == 'connected') {
-          onConnected(FB.getAuthResponse());
-        } else {
-          // Otherwise, show Login dialog first.
-          FB.login(function(rep) {
-            onConnected(FB.getAuthResponse());
-          }, {scope: 'user_friends, email'});
-        }
-      });
-    };
-
-    (function(d, s, id){
-       var js, fjs = d.getElementsByTagName(s)[0];
-       if (d.getElementById(id)) {return;}
-       js = d.createElement(s); js.id = id;
-       js.src = "//connect.facebook.net/en_US/sdk.js";
-       fjs.parentNode.insertBefore(js, fjs);
-     }(document, 'script', 'facebook-jssdk'));
-
-
-    function onConnected(privateData) {
-      console.log("connected");
-      var p = document.createElement('a');
-      p.href = window.location.href;
-      var allGetElements = [];
-      if (p.search.length > 0){
-        allGetElements = p.search.substring(1).split("&");
-      }
-
-      var data = {};
-      allGetElements.map(function(val) {
-        var tmp = val.split("=");
-        data[tmp[0]] = tmp[1];
-      });
-
-      // Ask to draw this profile picture
-      // display.showProflePicure(privateData.userID);
-      // display.refresh();
-
-      if(data.request_ids) {
-        FB.api(privateData.userID + '/apprequests?fields=id,application,to,from,data,message,action_type,object,created_time&access_token=' + privateData.accessToken,          function(val) {
-            console.log(data);
-            console.log(privateData);
-            g.opponentID = val.data[0].from.id;
-            g.opponentName = val.data[0].from.name;
-
-            console.log(val.data[0].from.id);
-            g.userID = privateData.userID;
-  
-            display = startGame();
-            opponent.parseAndClear(val.data[0]);
-        });
-      } else {
-          // Pick game to resume or start new game
-          display = startGame();
-      }
-    }
-
-  })(__GLOBAL, __DISPLAY, __LOGIC, __OPPONENT);
-</script>
 <h1 id="fb-welcome"></h1>
 <div id="fb-root"></div>
 </body>
