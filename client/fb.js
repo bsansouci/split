@@ -6,8 +6,8 @@ var __OPPONENT = __OPPONENT || {};
   Parse.initialize("nf0GIoSnS5rGiblTT59PZ9B3j4WOAmWIXqta2lbT", "zliwaIweOFowVIvAS4Kprxc3yrbVS7fHg2IDdVy4");
   g.ParseGameBoard = Parse.Object.extend("gameboard");
   
-  var timeout = setTimeout(couldntConnect, 10000);
   window.fbAsyncInit = function() {
+    var timeout = setTimeout(couldntConnect, 5000);
     console.log("init");
     FB.init({
       appId      : g.APP_ID,

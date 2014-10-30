@@ -37,7 +37,7 @@ var startGame = _.partial(function(g, display, logic, opponent, parseObject) {
     g.game.load.image('black-king', 'assets/pics/black-king.png');
     try {
       g.game.load.image('profile',
-        'http://graph.facebook.com/'+g.opponentID+
+        'https://graph.facebook.com/'+g.opponentID+
         '/picture?height=110&width=110');
     } catch (e) {
       g.game.load.image('profile', 'assets/pics/red-piece.png');
