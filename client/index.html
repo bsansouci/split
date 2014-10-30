@@ -86,12 +86,12 @@
             console.log(val.data[0].from.id);
             g.userID = privateData.userID;
   
-            display = start();
+            display = startGame();
             opponent.parseAndClear(val.data[0]);
         });
       } else {
           // Pick game to resume or start new game
-          display = start();
+          display = startGame();
       }
     }
 

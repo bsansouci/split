@@ -2,7 +2,7 @@ var LOGIC = LOGIC || {};
 var __DISPLAY = __DISPLAY || {};
 var __OPPONENT = __OPPONENT || {};
 
-var start = _.partial(function(g, display, logic, opponent, parseObject) {
+var startGame = _.partial(function(g, display, logic, opponent, parseObject) {
   // Public functions
   display.drawMove = drawMove;
 
@@ -14,12 +14,14 @@ var start = _.partial(function(g, display, logic, opponent, parseObject) {
         g.GAME_SCALE*g.BOARD_SIZE, Phaser.CANVAS, 'checkers', { preload: preload, create: create });
 
   function preload() {
-    console.log(g.opponentId);
-    console.log(parseObject);
-    if (typeof parseObject !== undefined){
-      logic.initialize();
-    } else {
+    console.log("parseObject:" + parseObject);
+    if ((parseObject !== undefined) &&
+      (parseObject.board) &&
+      (parseObject.move))
+    {
       g.board = parseObject.board;
+    } else {
+      logic.initialize();
     }
 
     g.game.load.image('red-piece', 'assets/pics/red-piece.png');
@@ -57,8 +59,6 @@ var start = _.partial(function(g, display, logic, opponent, parseObject) {
     sprite = g.game.add.sprite(g.BOARD_SIZE*g.GAME_SCALE+20, 20, 'profile');
     var style = { font: "20px Arial", fill: "#FFFFFF", align: "center" };
     var x = g.BOARD_SIZE*g.GAME_SCALE + 15;
-    console.log(g.opponentName);
-    console.log(wordWrap(g.opponentName, 12));
     g.game.add.text(x, 140, wordWrap(g.opponentName, 12), style);
   }
 

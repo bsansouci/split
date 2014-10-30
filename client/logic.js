@@ -156,4 +156,27 @@ var __DISPLAY = __DISPLAY || {};
   function makeEnemyMoves(moves) {
     moves.map(reverseMove).map(movePiece);
   }
+
+  function cloneBoard() {
+    var newBoard;
+    newBoard = new Array(g.BOARD_SIZE);
+
+    for (var i = 0; i < g.BOARD_SIZE; i++){
+      newBoard[i] = new Array(g.BOARD_SIZE);
+      for (var j = 0; j < g.BOARD_SIZE; j++){
+        if (g.board[i][j]){
+          var p = new Piece();
+          p.x = g.board[i][j].x;
+          p.y = g.board[i][j].y;
+          p.isAlly = g.board[i][j].isAlly;
+          p.isKing = g.board[i][j].isKing;
+          newBoard[i][j] = p;
+        } else {
+          newBoard[i][j] = null;
+        }
+      }
+    }
+    return newBoard;
+  }
+
 })(__GLOBAL, __DISPLAY, __LOGIC);
