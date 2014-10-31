@@ -176,13 +176,14 @@ var __OPPONENT = __OPPONENT || {};
     function recurse() {
       if (i < allMoves.length){
         display.drawMove(allMoves[i++], recurse);
+      } else {
+        g.state = g.GameState.NEW_MOVE;
       }
     }
     recurse();
 
     console.log("A LINE OF CODE NEEDS TO BE UNCOMMENTED (clearEvent)");
     // this.clearEvent(obj.id);
-    g.state = g.GameState.NEW_MOVE;
   }
 
   function clearEvent(requestId) {
