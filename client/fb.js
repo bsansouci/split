@@ -66,29 +66,41 @@ var __OPPONENT = __OPPONENT || {};
           success: function(results) {
             if(results.length === 0) {
               console.log("No board found");
-              startGame(null, function() {
-                parseAndClear(val.data[0]);
-              });
+              startGame(null, _.partial(parseAndClear, val.data[0]));
               return;
             }
             if(results.length > 1) {
               // LOL
               console.log("Too many boards found");
             }
-            startGame(results[0], function() {
-              parseAndClear(val.data[0]);
-            });
+            startGame(results[0], _.partial(parseAndClear, val.data[0]));
           },
           error: function(error) {
             console.log("No board found");
-            startGame(function() {
-              parseAndClear(val.data[0]);
-            });
+            startGame(null, _.partial(parseAndClear, val.data[0]));
           }
         });
       });
     } else {
       // Pick game to resume or start new game
+      //var query = new Parse.Query(g.ParseGameBoard);
+      //query.equalTo("userID", g.userID);
+      //query.find({
+      //  success: function(results) {
+      //    if(results.length === 0) {
+      //      console.log("No games found");
+      //      return;
+      //    }
+      //    // LOL
+      //    console.log("Too many boards found");
+      //  },
+      //  error: function(error) {
+      //    console.log("No board found");
+      //    startGame(function() {
+      //      parseAndClear(val.data[0]);
+      //    });
+      //  }
+      //});
       startGame();
     }
   }
