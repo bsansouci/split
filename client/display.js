@@ -16,19 +16,17 @@ var startGame = _.partial(function(g, display, logic, opponent, parseObject, cal
   function preload() {
     console.log("parseObject:", parseObject);
     if (parseObject &&
-        parseObject !== undefined &&
-        parseObject.board &&
-        parseObject.move)
+        parseObject !== undefined)
     {
-      g.board = parseObject.board;
-      g.userID = parseObject.userID;
-      g.opponentID = parseObject.opponentID;
-      g.allyNumCaptured = parseObject.allyNumCaptured;
-      g.enemyNumCaptured = parseObject.enemyNumCaptured;
-      g.board = parseObject.boardCopy;
-      g.BOARD_SIZE = parseObject.BOARD_SIZE;
-      g.NUM_ROWS = parseObject.NUM_ROWS;
+      g.board = parseObject.get("board");
+      g.userID = parseObject.get("userID");
+      g.opponentID = parseObject.get("opponentID");
+      g.allyNumCaptured = parseObject.get("allyNumCaptured");
+      g.enemyNumCaptured = parseObject.get("enemyNumCaptured");
+      g.BOARD_SIZE = parseObject.get("BOARD_SIZE");
+      g.NUM_ROWS = parseObject.get("NUM_ROWS");
     } else {
+      console.log("init");
       logic.initialize();
     }
 
@@ -81,7 +79,7 @@ var startGame = _.partial(function(g, display, logic, opponent, parseObject, cal
     switch(g.state) {
       case g.GameState.NEW_MOVE:
         // We make a copy of the board that we're going to send to parse
-        g.boardCopy = logic.cloneBoard();
+        g.boardCopy = logic.cloneBoard(g.board);
         g.state = g.GameState.CONTINUE;
         if(g.board[pos.x][pos.y]) return clickedOnPiece(pos.x, pos.y, graphics);
         break;
@@ -121,9 +119,10 @@ var startGame = _.partial(function(g, display, logic, opponent, parseObject, cal
   }
 
   function submitMove(){
-    opponent.sendTurn();
-    g.currentPossibleMoves = [];
-    g.moveHistory = [];
+    opponent.sendTurn(function() {
+      g.currentPossibleMoves = [];
+      g.moveHistory = [];
+    });
   }
 
   function getBoardPos(pointer) {
@@ -150,7 +149,7 @@ var startGame = _.partial(function(g, display, logic, opponent, parseObject, cal
     g.currentPossibleMoves = possibleMoves;
   }
 
-  function drawMove(move) {
+  function drawMove(move, callback) {
     var state = g.state;
     g.state = g.GameState.ANIMATING;
     piece = g.board[move.destX][move.destY];
@@ -158,10 +157,10 @@ var startGame = _.partial(function(g, display, logic, opponent, parseObject, cal
     var tween = g.game.add.tween(piece.sprite.position);
     var dest = {x: move.destX * g.GAME_SCALE, y: move.destY * g.GAME_SCALE};
     tween.to(dest, 500, Phaser.Easing.Quadratic.Out, true);
-    tween.onComplete.add(_.partial(afterMove, move, state), this);
+    tween.onComplete.add(_.partial(afterMove, move, state, callback), this);
   }
 
-  function afterMove(move, formerState){
+  function afterMove(move, formerState, callback){
     // Convert to king when applicable
     if (piece.isKing && !!piece.sprite.key.match("piece")){
       piece.sprite.loadTexture((piece.isAlly ? "red" : "black") +"-king");
@@ -180,10 +179,12 @@ var startGame = _.partial(function(g, display, logic, opponent, parseObject, cal
                               500 - g.STACK_INCREMENT*g.allyNumCaptured
       };
       tween.to(dest, 500, Phaser.Easing.Quadratic.Out, true);
-      tween.onComplete.add(function () {g.state = formerState;}, this);
+      tween.onComplete.add(function() {g.state = formerState;}, this);
     } else {
       g.state = formerState;
     }
+
+    if(callback) callback();
   }
 
 

@@ -8,7 +8,7 @@ var __OPPONENT = __OPPONENT || {};
 
   window.fbAsyncInit = function() {
     var timeout = setTimeout(couldntConnect, 5000);
-    console.log("init");
+    console.log("fb init");
     FB.init({
       appId      : g.APP_ID,
       xfbml      : true,
@@ -76,8 +76,9 @@ var __OPPONENT = __OPPONENT || {};
             startGame(results[0], _.partial(parseAndClear, val.data[0]));
           },
           error: function(error) {
-            console.log("No board found");
-            startGame(null, _.partial(parseAndClear, val.data[0]));
+            console.log("Error when querying parse");
+            // console.log("No board found");
+            // startGame(null, _.partial(parseAndClear, val.data[0]));
           }
         });
       });
@@ -138,7 +139,7 @@ var __OPPONENT = __OPPONENT || {};
     return arr;
   }
 
-  function sendTurn() {
+  function sendTurn(callback) {
     var str = encrypt(g.moveHistory);
     if(str.length > 255) {
       console.log("ERROR: moveHistory parsed is > 255 chars");
@@ -146,32 +147,84 @@ var __OPPONENT = __OPPONENT || {};
     }
 
     var b = new g.ParseGameBoard();
-    b.save({
-      userID: g.userID,
-      opponentID: g.opponentID,
-      allyNumCaptured: g.allyNumCaptured,
-      enemyNumCaptured:g.enemyNumCaptured,
-      board: g.boardCopy,
-      BOARD_SIZE: g.BOARD_SIZE,
-      NUM_ROWS: g.NUM_ROWS
-    }).then(function(object) {
-      console.log(object);
+    var query = new Parse.Query(g.ParseGameBoard);
+    query.equalTo("userID", g.userID);
+    query.equalTo("opponentID", g.opponentID);
+    query.find({
+      success: function(results) {
+        if(results.length === 0) {
+          console.log(g.boardCopy[5][4]);
+          b.save({
+            userID: g.userID,
+            opponentID: g.opponentID,
+            allyNumCaptured: g.allyNumCaptured,
+            enemyNumCaptured:g.enemyNumCaptured,
+            moveHistory: g.moveHistory,
+            board: g.boardCopy,
+            BOARD_SIZE: g.BOARD_SIZE,
+            NUM_ROWS: g.NUM_ROWS
+          }).then(function(object) {
+            // console.log(object);
+            // FB.ui({method: 'apprequests',
+            //   message: 'This is a newer message.',
+            //   to: '1216678154',
+            //   action_type:'turn',
+            //   data: str
+            // }, function(response){
+            //   console.log(response);
+            // });
+          });
+          if (callback) callback();
+          return;
+        }
+
+        results[0].userID = g.userID;
+        results[0].opponentID = g.opponentID;
+        results[0].allyNumCaptured = g.allyNumCaptured;
+        results[0].enemyNumCaptured =g.enemyNumCaptured;
+        results[0].board = g.boardCopy;
+        results[0].BOARD_SIZE = g.BOARD_SIZE;
+        results[0].NUM_ROWS = g.NUM_ROWS;
+        results[0].moveHistory = g.moveHistory;
+
+        results[0].save().then(function(o) {
+          if (callback) callback();
+          // FB.ui({method: 'apprequests',
+          //   message: 'This is a newer message.',
+          //   to: '1216678154',
+          //   action_type:'turn',
+          //   data: str
+          // }, function(response){
+          //   console.log(response);
+          // });
+        });
+      },
+      error: function(error) {
+        if (callback) callback();
+        console.log("Error when saving the same state in Parse");
+        // b.save({
+        //   userID: g.userID,
+        //   opponentID: g.opponentID,
+        //   allyNumCaptured: g.allyNumCaptured,
+        //   enemyNumCaptured:g.enemyNumCaptured,
+        //   board: g.boardCopy,
+        //   BOARD_SIZE: g.BOARD_SIZE,
+        //   NUM_ROWS: g.NUM_ROWS
+        // }).then(function(object) {
+        //   console.log(object);
+        // });
+      }
     });
-    // FB.ui({method: 'apprequests',
-    //   message: 'This is a newer message.',
-    //   to: '1216678154',
-    //   action_type:'turn',
-    //   data: str
-    // }, function(response){
-    //   console.log(response);
-    // });
   }
 
   function parseAndClear(obj) {
     var allMoves = decrypt(obj.data);
+
+    // We first apply all the moves
     logic.makeEnemyMoves(allMoves);
 
     g.state = g.GameState.ANIMATING;
+    // Then we draw the moves one after the other
     var i = 0;
     function recurse() {
       if (i < allMoves.length){
@@ -179,10 +232,13 @@ var __OPPONENT = __OPPONENT || {};
       } else {
         g.state = g.GameState.NEW_MOVE;
       }
+
+      display.drawMove(allMoves[i++], recurse);
     }
     recurse();
 
     console.log("A LINE OF CODE NEEDS TO BE UNCOMMENTED (clearEvent)");
+    window.history.replaceState("", "", window.location.href.match(".+/"));
     // this.clearEvent(obj.id);
   }
 

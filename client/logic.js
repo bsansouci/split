@@ -155,21 +155,21 @@ var __DISPLAY = __DISPLAY || {};
   }
 
   function makeEnemyMoves(moves) {
-    moves.map(reverseMove).map(movePiece);
+    moves.reverse().map(reverseMove).map(movePiece);
   }
 
-  function cloneBoard() {
-    var newBoard = new Array(g.BOARD_SIZE);
+  function cloneBoard(board) {
+    var newBoard = new Array(board.length);
 
-    for (var i = 0; i < g.BOARD_SIZE; i++){
-      newBoard[i] = new Array(g.BOARD_SIZE);
-      for (var j = 0; j < g.BOARD_SIZE; j++){
-        if (g.board[i][j]){
+    for (var i = 0; i < board.length; i++){
+      newBoard[i] = new Array(board[i].length);
+      for (var j = 0; j < newBoard[i].length; j++){
+        if (board[i][j]){
           var p = new Piece();
-          p.x = g.board[i][j].x;
-          p.y = g.board[i][j].y;
-          p.isAlly = g.board[i][j].isAlly;
-          p.isKing = g.board[i][j].isKing;
+          p.x = board[i][j].x;
+          p.y = board[i][j].y;
+          p.isAlly = board[i][j].isAlly;
+          p.isKing = board[i][j].isKing;
           newBoard[i][j] = p;
         }
       }
