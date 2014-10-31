@@ -171,6 +171,7 @@ var __OPPONENT = __OPPONENT || {};
     var allMoves = decrypt(obj.data);
     logic.makeEnemyMoves(allMoves);
 
+    g.state = g.GameState.ANIMATING;
     var i = 0;
     function recurse() {
       if (i < allMoves.length){
@@ -181,6 +182,7 @@ var __OPPONENT = __OPPONENT || {};
 
     console.log("A LINE OF CODE NEEDS TO BE UNCOMMENTED (clearEvent)");
     // this.clearEvent(obj.id);
+    g.state = g.GameState.NEW_MOVE;
   }
 
   function clearEvent(requestId) {
