@@ -19,7 +19,7 @@ var __GLOBAL = (function() {
     game: null,
     allyNumCaptured: 0,
     enemyNumCaptured: 0,
-    opponentId: 100001439708199,
+    opponentID: 100001439708199,
     opponentName: "David"
   };
   obj.state = obj.GameState.NEW_MOVE;

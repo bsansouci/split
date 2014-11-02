@@ -58,10 +58,12 @@ var __OPPONENT = __OPPONENT || {};
         g.opponentID = val.data[0].from.id;
         g.opponentName = val.data[0].from.name;
         g.userID = privateData.userID;
+        g.concatID = (g.userID < g.opponentID) ? "" + g.userID + g.opponentID : "" + g.opponentID + g.userID;
 
         var query = new Parse.Query(g.ParseGameBoard);
-        query.equalTo("userID", g.userID);
-        query.equalTo("opponentID", g.opponentID);
+//        query.equalTo("userID", g.userID);
+//        query.equalTo("opponentID", g.opponentID);
+        query.equalTo("concatID", g.concatID);
         query.find({
           success: function(results) {
             if(results.length === 0) {
@@ -148,8 +150,9 @@ var __OPPONENT = __OPPONENT || {};
 
     var b = new g.ParseGameBoard();
     var query = new Parse.Query(g.ParseGameBoard);
-    query.equalTo("userID", g.userID);
-    query.equalTo("opponentID", g.opponentID);
+    query.equalTo("concatID", g.concatID);
+//    query.equalTo("userID", g.userID);
+//    query.equalTo("opponentID", g.opponentID);
     query.find({
       success: function(results) {
         if(results.length === 0) {
@@ -157,6 +160,8 @@ var __OPPONENT = __OPPONENT || {};
           b.save({
             userID: g.userID,
             opponentID: g.opponentID,
+            concatID: g.concatID,
+            lastMove: g.userID,
             allyNumCaptured: g.allyNumCaptured,
             enemyNumCaptured:g.enemyNumCaptured,
             moveHistory: g.moveHistory,
@@ -177,11 +182,13 @@ var __OPPONENT = __OPPONENT || {};
           if (callback) callback();
           return;
         }
-
+        console.log(g.allyNumCaptured, g.enemyNumCaptured);
         results[0].userID = g.userID;
         results[0].opponentID = g.opponentID;
+        results[0].concatID = g.concatID;
+        results[0].lastMove = g.userID;
         results[0].allyNumCaptured = g.allyNumCaptured;
-        results[0].enemyNumCaptured =g.enemyNumCaptured;
+        results[0].enemyNumCaptured = g.enemyNumCaptured;
         results[0].board = g.boardCopy;
         results[0].BOARD_SIZE = g.BOARD_SIZE;
         results[0].NUM_ROWS = g.NUM_ROWS;
@@ -243,8 +250,8 @@ var __OPPONENT = __OPPONENT || {};
     // this.clearEvent(obj.id);
   }
 
-  function clearEvent(requestId) {
-    FB.api(requestId, 'delete', function(response) {
+  function clearEvent(requestID) {
+    FB.api(requestID, 'delete', function(response) {
       console.log(response);
     });
   }
