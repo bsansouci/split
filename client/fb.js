@@ -66,7 +66,8 @@ var __OPPONENT = __OPPONENT || {};
           success: function(results) {
             if(results.length === 0) {
               console.log("No board found");
-              startGame(null, _.partial(parseAndClear, val.data[0]));
+              // No data found, so load a new game.
+              startGame();
               return;
             }
             if(results.length > 1) {
@@ -77,8 +78,6 @@ var __OPPONENT = __OPPONENT || {};
           },
           error: function(error) {
             console.log("Error when querying parse");
-            // console.log("No board found");
-            // startGame(null, _.partial(parseAndClear, val.data[0]));
           }
         });
       });
@@ -135,11 +134,12 @@ var __OPPONENT = __OPPONENT || {};
       m.isFinal = (i === step1.length - 3);
       arr.push(m);
     }
-
     return arr;
   }
 
   function sendTurn(callback) {
+    // If you're playing locally or something messed up, don't push move.
+    if (g.userID === undefined || g.opponentID === undefined) return callback();
     var str = encrypt(g.moveHistory);
     if(str.length > 255) {
       console.log("ERROR: moveHistory parsed is > 255 chars");
@@ -221,6 +221,7 @@ var __OPPONENT = __OPPONENT || {};
     var allMoves = decrypt(obj.data);
 
     // We first apply all the moves
+    if (allMoves.length === 0) return console.log("No Moves.");
     logic.makeEnemyMoves(allMoves);
 
     g.state = g.GameState.ANIMATING;
