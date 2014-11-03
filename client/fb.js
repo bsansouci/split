@@ -183,16 +183,16 @@ var __OPPONENT = __OPPONENT || {};
           return;
         }
         console.log(g.allyNumCaptured, g.enemyNumCaptured);
-        results[0].userID = g.userID;
-        results[0].opponentID = g.opponentID;
-        results[0].concatID = g.concatID;
-        results[0].lastMove = g.userID;
-        results[0].allyNumCaptured = g.allyNumCaptured;
-        results[0].enemyNumCaptured = g.enemyNumCaptured;
-        results[0].board = g.boardCopy;
-        results[0].BOARD_SIZE = g.BOARD_SIZE;
-        results[0].NUM_ROWS = g.NUM_ROWS;
-        results[0].moveHistory = g.moveHistory;
+        results[0].set("userID", g.userID);
+        results[0].set("opponentID", g.opponentID);
+        results[0].set("concatID", g.concatID);
+        results[0].set("lastMove", g.userID);
+        results[0].set("allyNumCaptured", g.allyNumCaptured);
+        results[0].set("enemyNumCaptured", g.enemyNumCaptured);
+        results[0].set("board", g.boardCopy);
+        results[0].set("BOARD_SIZE", g.BOARD_SIZE);
+        results[0].set("NUM_ROWS", g.NUM_ROWS);
+        results[0].set("moveHistory", g.moveHistory);
 
         results[0].save().then(function(o) {
           if (callback) callback();
