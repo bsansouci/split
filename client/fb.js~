@@ -43,7 +43,6 @@ var __OPPONENT = __OPPONENT || {};
 
   function onConnected(privateData) {
     console.log("connected");
-    g.userID = privateData.userID;
     var p = document.createElement('a');
     p.href = window.location.href;
     var allGetElements = [];
@@ -62,9 +61,12 @@ var __OPPONENT = __OPPONENT || {};
         // This will be used to get the profile picture
         g.opponentID = val.data[0].from.id;
         g.opponentName = val.data[0].from.name;
+        g.userID = privateData.userID;
         g.concatID = (g.userID < g.opponentID) ? "" + g.userID + g.opponentID : "" + g.opponentID + g.userID;
 
         var query = new Parse.Query(g.ParseGameBoard);
+//        query.equalTo("userID", g.userID);
+//        query.equalTo("opponentID", g.opponentID);
         query.equalTo("concatID", g.concatID);
         query.find({
           success: function(results) {
@@ -86,43 +88,6 @@ var __OPPONENT = __OPPONENT || {};
         });
       });
     } else {
-      // Pick game to resume
-      var query = new Parse.Query(g.ParseGameBoard);
-      var query1 = new Parse.Query(g.ParseGameBoard);
-      query1.equalTo("opponentID", g.userID);
-      var query2 = new Parse.Query(g.ParseGameBoard);
-      query2.equalTo("userID", g.userID);
-      query = Parse.Query.or(query1, query2);
-      console.log("userID:", g.userID);
-      query.find({
-        success: function(results){
-          if (results.length === 0) return console.log("No Games to Load");
-          var container = document.getElementById('loadgame');
-          var loadForm = document.createElement('form');
-          var title = document.createElement('div');
-          title.innerHTML = "<h3>Load a Game</h3>";
-          loadForm.appendChild(title);
-          for(var i = 0; i < results.length; i++){
-            var gameItem = document.createElement('div');
-            var oppId;
-            console.log(results[0]);
-            if (results[0].opponentID === g.userID){
-              oppID = results[0].get("userID");
-            } else {
-              oppID = results[0].get("opponentID");
-            }
-            gameItem.innerHTML = '<input type="checkbox" name="load" value="'+
-              oppID + '"/>' + oppID;
-            loadForm.appendChild(gameItem);
-          }
-          container.appendChild(loadForm);
-        },
-        error: function(error){
-
-        }
-      });
-
-      // Start New Game:
       FB.api('/me/friends', function(response) {
         console.log(response);
         var container = document.getElementById('mfs');
@@ -147,31 +112,32 @@ var __OPPONENT = __OPPONENT || {};
         sendButton.onclick = sendRequest;
         mfsForm.appendChild(sendButton);
       });
+      // Pick game to resume or start new game
+      //var query = new Parse.Query(g.ParseGameBoard);
+      //query.equalTo("userID", g.userID);
+      //query.find({
+      //  success: function(results) {
+      //    if(results.length === 0) {
+      //      console.log("No games found");
+      //      return;
+      //    }
+      //    // LOL
+      //    console.log("Too many boards found");
+      //  },
+      //  error: function(error) {
+      //    console.log("No board found");
+      //    startGame(function() {
+      //      parseAndClear(val.data[0]);
+      //    });
+      //  }
+      //});
+      //startGame();
     }
   }
 
-  function sendRequest() {
-    // Get the list of selected friends
-    var sendUIDs = '';
-    var mfsForm = document.getElementById('mfsForm');
-      for(var i = 0; i < mfsForm.friends.length; i++) {
-        if(mfsForm.friends[i].checked) {
-          sendUIDs += mfsForm.friends[i].value + ',';
-        }
-      }
-
-    // Use FB.ui to send the Request(s)
-    FB.ui({method: 'apprequests',
-      to: sendUIDs,
-      title: '',
-      message: 'Check out this Awesome App!',
-    }, requestCallback);
-  }
-
-  function requestCallback(response) {
-    console.log(response);
-    // TODO: Set IDs.
-    startGame();
+  function sendRequest(a, b, c){
+    console.log(a, b, c);
+    console.log("Request logged");
   }
 
   function encrypt(arr) {
