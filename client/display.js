@@ -21,8 +21,28 @@ var startGame = _.partial(function(g, display, logic, opponent, parseObject, cal
       g.BOARD_SIZE = parseObject.get("BOARD_SIZE");
       g.NUM_ROWS = parseObject.get("NUM_ROWS");
       logic.initialize();
-      // TODO: Apply moves.
-      parseObject.get("previousTurns").map(logic.applyMove);
+      var IAmUser1 = (parseObject.get("user1ID") === g.userID);
+
+      var userMoves = [];
+      var enemyMoves = [];
+      if(IAmUser1) {
+        userMoves = parseObject.get("previousTurns").filter(function(val, i) {
+          return i%2 === 0;
+        });
+        enemyMoves = parseObject.get("previousTurns").filter(function(val, i) {
+          return i%2 === 1;
+        });
+      } else {
+        userMoves = parseObject.get("previousTurns").filter(function(val, i) {
+          return i%2 === 1;
+        });
+        enemyMoves = parseObject.get("previousTurns").filter(function(val, i) {
+          return i%2 === 0;
+        });
+      }
+
+      _.flatten(userMoves).map(logic.movePiece);
+      enemyMoves.map(logic.makeEnemyMoves);
     } else {
       logic.initialize();
     }

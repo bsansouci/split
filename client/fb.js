@@ -59,6 +59,7 @@ var __OPPONENT = __OPPONENT || {};
     if(data.request_ids) {
       FB.api(privateData.userID + '/apprequests?fields=id,application,to,from,data,message,action_type,object,created_time&access_token=' + privateData.accessToken,          function(val) {
         // This will be used to get the profile picture
+        console.log(val);
         g.opponentID = val.data[0].from.id;
         g.opponentName = val.data[0].from.name;
         g.concatID = (g.userID < g.opponentID) ? "" + g.userID + g.opponentID : "" + g.opponentID + g.userID;
@@ -103,7 +104,7 @@ var __OPPONENT = __OPPONENT || {};
           loadForm.appendChild(title);
           for(var i = 0; i < results.length; i++){
             var oppId;
-            if (results[i].opponentID === g.userID){
+            if (results[i].get("opponentID") === g.userID){
               oppID = results[i].get("userID");
             } else {
               oppID = results[i].get("opponentID");
@@ -207,8 +208,9 @@ var __OPPONENT = __OPPONENT || {};
       success: function(results){
         if (results.length < 1) return console.log("Game does not exist");
         if (results.length > 1) return console.log("Too many games found");
-        
+
         FB.api(privateData.userID + '/apprequests?fields=id,application,to,from,data,message,action_type,object,created_time&access_token=' + privateData.accessToken,          function(val) {
+
           startGame(results[0]);
         });
       },
@@ -221,11 +223,6 @@ var __OPPONENT = __OPPONENT || {};
   function sendTurn(callback) {
     // If you're playing locally or something messed up, don't push move.
     if (g.userID === undefined || g.opponentID === undefined) return callback();
-    var str = encrypt(g.moveHistory);
-    if(str.length > 255) {
-      console.log("ERROR: moveHistory parsed is > 255 chars");
-      return;
-    }
 
     var b = new g.ParseGameBoard();
     var query = new Parse.Query(g.ParseGameBoard);
@@ -233,7 +230,6 @@ var __OPPONENT = __OPPONENT || {};
     query.find({
       success: function(results) {
         if(results.length === 0) {
-          console.log(g.boardCopy[5][4]);
           b.save({
             user1ID: g.userID,
             user2ID: g.opponentID,
@@ -247,7 +243,6 @@ var __OPPONENT = __OPPONENT || {};
             //   message: 'This is a newer message.',
             //   to: '1216678154',
             //   action_type:'turn',
-            //   data: str
             // }, function(response){
             //   console.log(response);
             // });

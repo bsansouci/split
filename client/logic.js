@@ -11,7 +11,7 @@ var __DISPLAY = __DISPLAY || {};
   logic.makeEnemyMoves = makeEnemyMoves;
   logic.cloneBoard = cloneBoard;
 
-  function initialize(){
+  function initialize() {
     for (var i = 0; i < g.BOARD_SIZE/2; i++){
       for (var j = 0; j < g.NUM_ROWS; j++){
         var enemy = new Piece();
@@ -155,7 +155,7 @@ var __DISPLAY = __DISPLAY || {};
   }
 
   function makeEnemyMoves(moves) {
-    moves.reverse().map(reverseMove).map(movePiece);
+    moves.map(reverseMove).map(movePiece);
   }
 
   function cloneBoard(board) {
