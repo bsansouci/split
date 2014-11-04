@@ -18,15 +18,12 @@ var startGame = _.partial(function(g, display, logic, opponent, parseObject, cal
     if (parseObject &&
         parseObject !== undefined)
     {
-      g.board = parseObject.get("board");
-      g.userID = parseObject.get("userID");
-      g.opponentID = parseObject.get("opponentID");
-      g.allyNumCaptured = parseObject.get("allyNumCaptured");
-      g.enemyNumCaptured = parseObject.get("enemyNumCaptured");
       g.BOARD_SIZE = parseObject.get("BOARD_SIZE");
       g.NUM_ROWS = parseObject.get("NUM_ROWS");
+      logic.initialize();
+      // TODO: Apply moves.
+      parseObject.get("previousTurns").map(logic.applyMove);
     } else {
-      console.log("init");
       logic.initialize();
     }
 

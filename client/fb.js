@@ -7,7 +7,6 @@ var __OPPONENT = __OPPONENT || {};
   g.ParseGameBoard = Parse.Object.extend("gameboard");
 
   opponent.sendTurn = sendTurn;
-  opponent.parseAndClear = parseAndClear;
   opponent.clearEvent = clearEvent;
 
   window.fbAsyncInit = function() {
@@ -78,7 +77,7 @@ var __OPPONENT = __OPPONENT || {};
               // LOL
               console.log("Too many boards found");
             }
-            startGame(results[0], _.partial(parseAndClear, val.data[0]));
+            startGame(results[0], _.partial(clearEvent, val.data[0].id));
           },
           error: function(error) {
             console.log("Error when querying parse");
@@ -89,9 +88,9 @@ var __OPPONENT = __OPPONENT || {};
       // Pick game to resume
       var query = new Parse.Query(g.ParseGameBoard);
       var query1 = new Parse.Query(g.ParseGameBoard);
-      query1.equalTo("opponentID", g.userID);
+      query1.equalTo("user1ID", g.userID);
       var query2 = new Parse.Query(g.ParseGameBoard);
-      query2.equalTo("userID", g.userID);
+      query2.equalTo("user2ID", g.userID);
       query = Parse.Query.or(query1, query2);
       console.log("userID:", g.userID);
       query.find({
@@ -115,7 +114,7 @@ var __OPPONENT = __OPPONENT || {};
             loadButton.style.width = '200px';
             loadButton.onclick = _.partial(loadCallback, results[i].get("concatID"));
             loadForm.appendChild(loadButton);
-            loadForm.appendChild(document.createElement('br'));
+            loadForm.appendChild("<br>");
           }
           container.appendChild(loadForm);
         },
@@ -210,42 +209,13 @@ var __OPPONENT = __OPPONENT || {};
         if (results.length > 1) return console.log("Too many games found");
         
         FB.api(privateData.userID + '/apprequests?fields=id,application,to,from,data,message,action_type,object,created_time&access_token=' + privateData.accessToken,          function(val) {
-          startGame(results[0], _.partial(parseAndClear, val.data[0]));
+          startGame(results[0]);
         });
       },
       error: function(results){
         console.log("Error, could not load game");
       }
     });
-  }
-
-  function encrypt(arr) {
-    return arr.reduce(function(acc, val) {
-      return acc += val.srcX + "." + val.srcY + ":" +
-                    val.destX + "." + val.destY + (val.captures ? "T" : "F");
-    }, "");
-  }
-  function decrypt(str) {
-    if (typeof str === 'undefined' || str.length === 0) return [];
-    var arr = [];
-    var step1 = str.split(/(T|F)/g);
-
-    // The last element is going to be empty so we skip it
-    for (var i = 0; i < step1.length - 1; i+=2) {
-      var step2 = step1[i].split(":");
-      var src = step2[0].split(".");
-      var dest = step2[1].split(".");
-
-      var m = new Move();
-      m.srcX = parseInt(src[0]);
-      m.srcY = parseInt(src[1]);
-      m.destX = parseInt(dest[0]);
-      m.destY = parseInt(dest[1]);
-      m.captures = (step1[i+1] === "T");
-      m.isFinal = (i === step1.length - 3);
-      arr.push(m);
-    }
-    return arr;
   }
 
   function sendTurn(callback) {
@@ -260,21 +230,15 @@ var __OPPONENT = __OPPONENT || {};
     var b = new g.ParseGameBoard();
     var query = new Parse.Query(g.ParseGameBoard);
     query.equalTo("concatID", g.concatID);
-//    query.equalTo("userID", g.userID);
-//    query.equalTo("opponentID", g.opponentID);
     query.find({
       success: function(results) {
         if(results.length === 0) {
           console.log(g.boardCopy[5][4]);
           b.save({
-            userID: g.userID,
-            opponentID: g.opponentID,
+            user1ID: g.userID,
+            user2ID: g.opponentID,
             concatID: g.concatID,
-            lastMove: g.userID,
-            allyNumCaptured: g.allyNumCaptured,
-            enemyNumCaptured:g.enemyNumCaptured,
-            moveHistory: g.moveHistory,
-            board: g.boardCopy,
+            previousTurns: [g.moveHistory],
             BOARD_SIZE: g.BOARD_SIZE,
             NUM_ROWS: g.NUM_ROWS
           }).then(function(object) {
@@ -292,17 +256,7 @@ var __OPPONENT = __OPPONENT || {};
           return;
         }
         console.log(g.allyNumCaptured, g.enemyNumCaptured);
-        results[0].set("userID", g.userID);
-        results[0].set("opponentID", g.opponentID);
-        results[0].set("concatID", g.concatID);
-        results[0].set("lastMove", g.userID);
-        results[0].set("allyNumCaptured", g.allyNumCaptured);
-        results[0].set("enemyNumCaptured", g.enemyNumCaptured);
-        results[0].set("board", g.boardCopy);
-        results[0].set("BOARD_SIZE", g.BOARD_SIZE);
-        results[0].set("NUM_ROWS", g.NUM_ROWS);
-        results[0].set("moveHistory", g.moveHistory);
-
+        results[0].add("previousTurns", g.moveHistory);
         results[0].save().then(function(o) {
           if (callback) callback();
           // FB.ui({method: 'apprequests',
@@ -318,45 +272,8 @@ var __OPPONENT = __OPPONENT || {};
       error: function(error) {
         if (callback) callback();
         console.log("Error when saving the same state in Parse");
-        // b.save({
-        //   userID: g.userID,
-        //   opponentID: g.opponentID,
-        //   allyNumCaptured: g.allyNumCaptured,
-        //   enemyNumCaptured:g.enemyNumCaptured,
-        //   board: g.boardCopy,
-        //   BOARD_SIZE: g.BOARD_SIZE,
-        //   NUM_ROWS: g.NUM_ROWS
-        // }).then(function(object) {
-        //   console.log(object);
-        // });
       }
     });
-  }
-
-  function parseAndClear(obj) {
-    var allMoves = decrypt(obj.data);
-
-    // We first apply all the moves
-    if (allMoves.length === 0) return console.log("No Moves.");
-    logic.makeEnemyMoves(allMoves);
-
-    g.state = g.GameState.ANIMATING;
-    // Then we draw the moves one after the other
-    var i = 0;
-    function recurse() {
-      if (i < allMoves.length){
-        display.drawMove(allMoves[i++], recurse);
-      } else {
-        g.state = g.GameState.NEW_MOVE;
-      }
-
-      display.drawMove(allMoves[i++], recurse);
-    }
-    recurse();
-
-    console.log("A LINE OF CODE NEEDS TO BE UNCOMMENTED (clearEvent)");
-    window.history.replaceState("", "", window.location.href.match(".+/"));
-    // this.clearEvent(obj.id);
   }
 
   function clearEvent(requestID) {
@@ -364,5 +281,6 @@ var __OPPONENT = __OPPONENT || {};
       console.log(response);
     });
   }
+
   return this;
 })(__GLOBAL, __DISPLAY, __LOGIC, __OPPONENT);
