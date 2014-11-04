@@ -22,14 +22,15 @@ var startGame = _.partial(function(g, display, logic, opponent, parseObject, cal
       g.NUM_ROWS = parseObject.get("NUM_ROWS");
       logic.initialize();
       var IAmUser1 = (parseObject.get("user1ID") === g.userID);
-      var moves = parseObject.get("previousTurns");
-      for (var i = 0; i < moves.length; i++) {
-        if(i%2 === 0) {
-          moves[i].map(logic.movePiece);
-        } else {
+      var turns = parseObject.get("previousTurns");
+
+      turns.map(function(e, i) {
+        if(i%2 === +IAmUser1) {
           logic.makeEnemyMoves(moves[i]);
+        } else {
+          moves[i].map(logic.movePiece);
         }
-      }
+      });
 
     } else {
       logic.initialize();
