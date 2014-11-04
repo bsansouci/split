@@ -23,23 +23,13 @@ var startGame = _.partial(function(g, display, logic, opponent, parseObject, cal
       logic.initialize();
       var IAmUser1 = (parseObject.get("user1ID") === g.userID);
 
-      var userMoves = [];
-      var enemyMoves = [];
-      if(IAmUser1) {
-        userMoves = parseObject.get("previousTurns").filter(function(val, i) {
-          return i%2 === 0;
-        });
-        enemyMoves = parseObject.get("previousTurns").filter(function(val, i) {
-          return i%2 === 1;
-        });
-      } else {
-        userMoves = parseObject.get("previousTurns").filter(function(val, i) {
-          return i%2 === 1;
-        });
-        enemyMoves = parseObject.get("previousTurns").filter(function(val, i) {
-          return i%2 === 0;
-        });
-      }
+      var userMoves = parseObject.get("previousTurns").filter(function(val, i) {
+        // +!IAmUser1 will be type casted to an int (either 0 or 1)
+        return i%2 === +!IAmUser1;
+      });
+      var enemyMoves = parseObject.get("previousTurns").filter(function(val, i) {
+        return i%2 === +IAmUser1;
+      });
 
       _.flatten(userMoves).map(logic.movePiece);
       enemyMoves.map(logic.makeEnemyMoves);
