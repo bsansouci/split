@@ -103,22 +103,24 @@ var __OPPONENT = __OPPONENT || {};
           title.innerHTML = "<h3>Load a Game</h3>";
           loadForm.appendChild(title);
           for(var i = 0; i < results.length; i++){
-            var gameItem = document.createElement('div');
             var oppId;
-            console.log(results[0]);
-            if (results[0].opponentID === g.userID){
-              oppID = results[0].get("userID");
+            if (results[i].opponentID === g.userID){
+              oppID = results[i].get("userID");
             } else {
-              oppID = results[0].get("opponentID");
+              oppID = results[i].get("opponentID");
             }
-            gameItem.innerHTML = '<input type="checkbox" name="load" value="'+
-              oppID + '"/>' + oppID;
-            loadForm.appendChild(gameItem);
+            var loadButton = document.createElement('input');
+            loadButton.type = "button";
+            loadButton.value = oppID;
+            loadButton.style.width = '200px';
+            loadButton.onclick = _.partial(loadCallback, results[i].get("concatID"));
+            loadForm.appendChild(loadButton);
+            loadForm.appendChild(document.createElement('br'));
           }
           container.appendChild(loadForm);
         },
         error: function(error){
-
+          console.log("Could not load games");
         }
       });
 
@@ -131,47 +133,90 @@ var __OPPONENT = __OPPONENT || {};
         var title = document.createElement('div');
         title.innerHTML = "<h3>Start New Game</h3>";
         mfsForm.appendChild(title);
-        for(var i = 0; i < Math.min(response.data.length, 10); i++) {
-          var friendItem = document.createElement('div');
-          friendItem.id = 'friend_' + response.data[i].id;
-          friendItem.innerHTML = '<input type="checkbox" name="friends" value="' +
-            response.data[i].id + '" />' + response.data[i].name;
-          mfsForm.appendChild(friendItem);
+        for(var i = 0; i < response.data.length; i++) {
+          var sendButton = document.createElement('input');
+          sendButton.type = 'button';
+          sendButton.value = response.data[i].name;
+          sendButton.onclick = _.partial(sendRequest, response.data[i].id);
+          sendButton.style.width = '200px';
+          mfsForm.appendChild(sendButton);
+          mfsForm.appendChild(document.createElement('br'));
         }
         container.appendChild(mfsForm);
+      });
 
-        // Create a button to send the Request(s)
-        var sendButton = document.createElement('input');
-        sendButton.type = 'button';
-        sendButton.value = 'Send Request';
-        sendButton.onclick = sendRequest;
-        mfsForm.appendChild(sendButton);
+      FB.api('/me/invitable_friends', function(response) {
+        console.log(response);
+        var container = document.getElementById('invitenew');
+        var inviteForm = document.createElement('div');
+        inviteForm.style.height = '300px';
+        inviteForm.style.width = '250px';
+        inviteForm.style.overflow = 'scroll';
+        inviteForm.id = 'inviteForm';
+        var title = document.createElement('div');
+        title.innerHTML = "<h3>Invite New Friends to Checkers</h3>";
+        container.appendChild(title);
+        container.appendChild(inviteForm);
+        for(var i = 0; i < response.data.length; i++) {
+          var sendButton = document.createElement('input');
+          sendButton.type = 'button';
+          sendButton.value = response.data[i].name;
+          sendButton.onclick = _.partial(sendRequest, response.data[i].id);
+          sendButton.style.width = '200px';
+          inviteForm.appendChild(sendButton);
+          inviteForm.appendChild(document.createElement('br'));
+        }
       });
     }
   }
 
-  function sendRequest() {
+  // Gets called after clicking a friend to invite
+  function sendRequest(id) {
+    console.log("id:" + id);
+    requestCallback(null, id);
     // Get the list of selected friends
-    var sendUIDs = '';
-    var mfsForm = document.getElementById('mfsForm');
-      for(var i = 0; i < mfsForm.friends.length; i++) {
-        if(mfsForm.friends[i].checked) {
-          sendUIDs += mfsForm.friends[i].value + ',';
-        }
-      }
+    // var sendUIDs = '';
+    // var mfsForm = document.getElementById('mfsForm');
+    //   for(var i = 0; i < mfsForm.friends.length; i++) {
+    //     if(mfsForm.friends[i].checked) {
+    //       sendUIDs += mfsForm.friends[i].value + ',';
+    //     }
+    //   }
 
-    // Use FB.ui to send the Request(s)
-    FB.ui({method: 'apprequests',
-      to: sendUIDs,
-      title: '',
-      message: 'Check out this Awesome App!',
-    }, requestCallback);
+    // // Use FB.ui to send the Request(s)
+    // FB.ui({method: 'apprequests',
+    //   to: sendUIDs,
+    //   title: 'Checkers',
+    //   message: 'Try Checkers!',
+    // }, _.partial(requestCallback, id));
   }
 
-  function requestCallback(response) {
+  // Gets called after sending the new game request.
+  function requestCallback(response, id) {
     console.log(response);
     // TODO: Set IDs.
+    g.opponentID = id;
     startGame();
+  }
+
+  // Gets called after clicking a loadable game.
+  function loadCallback(id){
+    console.log("loading: " + id);
+    var query = new Parse.Query(g.ParseGameBoard);
+    query.equalTo("concatID", id);
+    query.find({
+      success: function(results){
+        if (results.length < 1) return console.log("Game does not exist");
+        if (results.length > 1) return console.log("Too many games found");
+        
+        FB.api(privateData.userID + '/apprequests?fields=id,application,to,from,data,message,action_type,object,created_time&access_token=' + privateData.accessToken,          function(val) {
+          startGame(results[0], _.partial(parseAndClear, val.data[0]));
+        });
+      },
+      error: function(results){
+        console.log("Error, could not load game");
+      }
+    });
   }
 
   function encrypt(arr) {
