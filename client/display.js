@@ -26,9 +26,9 @@ var startGame = _.partial(function(g, display, logic, opponent, parseObject, cal
 
       turns.map(function(e, i) {
         if(i%2 === +IAmUser1) {
-          logic.makeEnemyMoves(moves[i]);
+          logic.makeEnemyMoves(e);
         } else {
-          moves[i].map(logic.movePiece);
+          e.map(logic.movePiece);
         }
       });
 
