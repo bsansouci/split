@@ -238,7 +238,6 @@ var __OPPONENT = __OPPONENT || {};
             BOARD_SIZE: g.BOARD_SIZE,
             NUM_ROWS: g.NUM_ROWS
           }).then(function(object) {
-            // console.log(object);
             // FB.ui({method: 'apprequests',
             //   message: 'This is a newer message.',
             //   to: '1216678154',
@@ -258,7 +257,6 @@ var __OPPONENT = __OPPONENT || {};
           //   message: 'This is a newer message.',
           //   to: '1216678154',
           //   action_type:'turn',
-          //   data: str
           // }, function(response){
           //   console.log(response);
           // });
@@ -272,9 +270,9 @@ var __OPPONENT = __OPPONENT || {};
   }
 
   function clearEvent(requestID) {
-    FB.api(requestID, 'delete', function(response) {
-      console.log(response);
-    });
+    // FB.api(requestID, 'delete', function(response) {
+    //   console.log(response);
+    // });
   }
 
   return this;
