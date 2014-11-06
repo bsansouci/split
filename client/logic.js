@@ -6,7 +6,6 @@ var __DISPLAY = __DISPLAY || {};
   logic.initialize = initialize;
   logic.possibleSubMoves = possibleSubMoves;
   logic.movePiece = movePiece;
-  logic.pieceCaptured = pieceCaptured;
   logic.getMiddle = getMiddle;
   logic.makeEnemyMoves = makeEnemyMoves;
   logic.cloneBoard = cloneBoard;
@@ -104,8 +103,10 @@ var __DISPLAY = __DISPLAY || {};
   }
 
   function movePiece(src, dest) {
+    var move;
     // If it wasn't given a dest, we assume that src is of type Move
     if(!dest) {
+      move = src;
       dest = {
         x: src.destX,
         y: src.destY
@@ -126,6 +127,12 @@ var __DISPLAY = __DISPLAY || {};
       g.board[dest.x][dest.y].isKing = true;
     } else if(!g.board[dest.x][dest.y].isAlly && dest.y === g.BOARD_SIZE - 1) {
       g.board[dest.x][dest.y].isKing = true;
+    }
+    console.log(move);
+    if(move && move.captures) {
+      var mid = getMiddle(move);
+      var captured = g.board[mid.x][mid.y];
+      pieceCaptured(captured);
     }
   }
 

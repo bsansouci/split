@@ -104,7 +104,7 @@ var startGame = _.partial(function(g, display, logic, opponent, parseObject, cal
         else if (!move) return;
 
         g.moveHistory.push(move);
-        logic.movePiece(move);
+        // logic.movePiece(move);
         if (!move.isFinal){
           clickedOnPiece(pos.x, pos.y, graphics);
         } else {
@@ -162,7 +162,7 @@ var startGame = _.partial(function(g, display, logic, opponent, parseObject, cal
   function drawMove(move, callback) {
     var state = g.state;
     g.state = g.GameState.ANIMATING;
-    piece = g.board[move.destX][move.destY];
+    piece = g.board[move.srcX][move.srcY];
     piece.sprite.bringToTop();
     var tween = g.game.add.tween(piece.sprite.position);
     var dest = {x: move.destX * g.GAME_SCALE, y: move.destY * g.GAME_SCALE};
@@ -171,16 +171,9 @@ var startGame = _.partial(function(g, display, logic, opponent, parseObject, cal
   }
 
   function afterMove(move, formerState, callback){
-    // Convert to king when applicable
-    if (piece.isKing && !!piece.sprite.key.match("piece")){
-      piece.sprite.loadTexture((piece.isAlly ? "red" : "black") +"-king");
-    }
-
-    //var move = context.move;
     if (move.captures) {
       var mid = logic.getMiddle(move);
       var captured = g.board[mid.x][mid.y];
-      logic.pieceCaptured(captured);
       captured.sprite.bringToTop();
       var tween = g.game.add.tween(captured.sprite.position);
       var dest = {
@@ -192,6 +185,13 @@ var startGame = _.partial(function(g, display, logic, opponent, parseObject, cal
       tween.onComplete.add(function() {g.state = formerState;}, this);
     } else {
       g.state = formerState;
+    }
+
+    logic.movePiece(move);
+
+    // Convert to king when applicable
+    if (piece.isKing && !!piece.sprite.key.match("piece")){
+      piece.sprite.loadTexture((piece.isAlly ? "red" : "black") +"-king");
     }
 
     if(callback) callback();
