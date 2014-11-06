@@ -87,7 +87,8 @@ var startGame = _.partial(function(g, display, logic, opponent, parseObject, cal
         // We make a copy of the board that we're going to send to parse
         g.boardCopy = logic.cloneBoard(g.board);
         g.state = g.GameState.CONTINUE;
-        if(g.board[pos.x][pos.y]) return clickedOnPiece(pos.x, pos.y, graphics);
+        if(g.board[pos.x][pos.y] && g.board[pos.x][pos.y].isAlly)
+          return clickedOnPiece(pos.x, pos.y, graphics);
         break;
       case g.GameState.CONTINUE:
         var p = {destX: pos.x, destY: pos.y};
@@ -110,8 +111,6 @@ var startGame = _.partial(function(g, display, logic, opponent, parseObject, cal
         drawMove(move);
         break;
       case g.GameState.WAITING:
-
-        // Placeholder for enemy's move
         break;
     }
 
@@ -125,6 +124,7 @@ var startGame = _.partial(function(g, display, logic, opponent, parseObject, cal
   }
 
   function submitMove(){
+    g.state = g.GameState.WAITING;
     opponent.sendTurn(function() {
       g.currentPossibleMoves = [];
       g.moveHistory = [];
