@@ -31,7 +31,11 @@ var startGame = _.partial(function(g, display, logic, opponent, parseObject, cal
           e.map(logic.movePiece);
         }
       });
-
+      if((IAmUser1 && turns.length % 2 === 0) || (!IAmUser1 && turns.length % 2 === 1)) {
+        g.state = g.GameState.NEW_MOVE;
+      } else {
+        g.state = g.GameState.WAITING;
+      }
     } else {
       logic.initialize();
     }

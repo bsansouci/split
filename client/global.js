@@ -20,7 +20,8 @@ var __GLOBAL = (function() {
     allyNumCaptured: 0,
     enemyNumCaptured: 0,
     opponentID: 100001439708199,
-    opponentName: "David"
+    userID: 100001439708199,
+    opponentName: "David Cottrell"
   };
   obj.state = obj.GameState.NEW_MOVE;
 
