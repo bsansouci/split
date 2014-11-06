@@ -280,9 +280,9 @@ var __OPPONENT = __OPPONENT || {};
   }
 
   function clearEvent(requestID) {
-    // FB.api(requestID, 'delete', function(response) {
-    //   console.log(response);
-    // });
+    FB.api(requestID, 'delete', function(response) {
+      console.log("Event cleared", response);
+    });
   }
 
   return this;
