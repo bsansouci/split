@@ -232,7 +232,6 @@ var __OPPONENT = __OPPONENT || {};
   function sendTurn(callback) {
     // If you're playing locally or something messed up, don't push move.
     if (g.userID === undefined || g.opponentID === undefined) return callback();
-    console.log(g.concatID, typeof g.concatID, typeof g.userID, typeof g.opponentID);
     if(!g.concatID) g.concatID = (g.userID < g.opponentID) ? "" + g.userID + g.opponentID : "" + g.opponentID + g.userID;
 
     var b = new g.ParseGameBoard();
@@ -254,21 +253,21 @@ var __OPPONENT = __OPPONENT || {};
               to: g.opponentID,
               action_type:'turn',
             }, function(response){
+              if (callback) callback();
               console.log(response);
             });
           });
-          if (callback) callback();
           return;
         }
 
         results[0].add("previousTurns", g.moveHistory);
         results[0].save().then(function(o) {
-          if (callback) callback();
           FB.ui({method: 'apprequests',
             message: 'Hey ' + g.opponentName + ' it\'s your turn!',
             to: g.opponentID,
             action_type:'turn',
           }, function(response){
+            if (callback) callback();
             console.log(response);
           });
         });
