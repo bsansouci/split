@@ -24,18 +24,38 @@ var startGame = _.partial(function(g, display, logic, opponent, parseObject, cal
       var IAmUser1 = (parseObject.get("user1ID") === g.userID);
       var turns = parseObject.get("previousTurns");
 
-      turns.map(function(e, i) {
+      turns.slice(0,-1).map(function(e, i) {
         if(i%2 === +IAmUser1) {
           logic.makeEnemyMoves(e);
         } else {
           e.map(logic.movePiece);
         }
       });
-      if((IAmUser1 && turns.length % 2 === 0) || (!IAmUser1 && turns.length % 2 === 1)) {
-        g.state = g.GameState.NEW_MOVE;
-      } else {
-        g.state = g.GameState.WAITING;
-      }
+
+
+      callback = _.partial(function(turns, IAmUser1, c){
+        var lastTurn = turns[turns.length - 1];
+        if (turns.length%2 !== +IAmUser1){
+          lastTurn.map(logic.reverseMove);
+        }
+        var i = 0;
+        function drawNextMove(){
+          if (i < lastTurn.length)
+            drawMove(lastTurn[i++], drawNextMove);
+          else {
+            if((IAmUser1 && turns.length % 2 === 0) ||
+                (!IAmUser1 && turns.length % 2 === 1)) {
+              g.state = g.GameState.NEW_MOVE;
+            } else {
+              g.state = g.GameState.WAITING;
+            }
+            if (c) c();
+          }
+        }
+        g.state = g.GameState.ANIMATING;
+        drawNextMove();
+      }, turns, IAmUser1, callback);
+
     } else {
       logic.initialize();
     }
@@ -204,9 +224,6 @@ var startGame = _.partial(function(g, display, logic, opponent, parseObject, cal
       var tween = g.game.add.tween(captured.sprite.position);
       var dest = calcCapturedDest(captured.isAlly);
       tween.to(dest, 500, Phaser.Easing.Quadratic.Out, true);
-      tween.onComplete.add(function() {g.state = formerState;}, this);
-    } else {
-      g.state = formerState;
     }
 
     logic.movePiece(move);
@@ -216,6 +233,7 @@ var startGame = _.partial(function(g, display, logic, opponent, parseObject, cal
       piece.sprite.loadTexture((piece.isAlly ? "red" : "black") +"-king");
     }
 
+    g.state = formerState;
     if(callback) callback();
   }
 

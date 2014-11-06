@@ -9,6 +9,7 @@ var __DISPLAY = __DISPLAY || {};
   logic.getMiddle = getMiddle;
   logic.makeEnemyMoves = makeEnemyMoves;
   logic.cloneBoard = cloneBoard;
+  logic.reverseMove = reverseMove;
 
   function initialize() {
     for (var i = 0; i < g.BOARD_SIZE/2; i++){
@@ -105,7 +106,7 @@ var __DISPLAY = __DISPLAY || {};
   function movePiece(src, dest) {
     var move;
     // If it wasn't given a dest, we assume that src is of type Move
-    if(!dest) {
+    if(typeof dest !== "object") {
       move = src;
       dest = {
         x: src.destX,
@@ -128,7 +129,6 @@ var __DISPLAY = __DISPLAY || {};
     } else if(!g.board[dest.x][dest.y].isAlly && dest.y === g.BOARD_SIZE - 1) {
       g.board[dest.x][dest.y].isKing = true;
     }
-    console.log(move);
     if(move && move.captures) {
       var mid = getMiddle(move);
       var captured = g.board[mid.x][mid.y];
