@@ -212,16 +212,16 @@ var __OPPONENT = __OPPONENT || {};
         if(results[0].get("user1ID") === g.userID) {
           g.opponentID = results[0].get("user2ID");
         } else {
-          g.opponentID = results[0].get("user2ID");
+          g.opponentID = results[0].get("user1ID");
         }
 
         g.concatID = (g.userID < g.opponentID) ? "" + g.userID + g.opponentID : "" + g.opponentID + g.userID;
         document.getElementById("main-screen").style.display = "none";
-        startGame(results[0]);
-        // FB.api(privateData.userID + '/apprequests?fields=id,application,to,from,data,message,action_type,object,created_time&access_token=' + privateData.accessToken,          function(val) {
-
-        //   startGame(results[0]);
-        // });
+        FB.api("/"+g.opponentID,
+          function(val) {
+            g.opponentName = val.name;
+            startGame(results[0]);
+        });
       },
       error: function(results){
         console.log("Error, could not load game");

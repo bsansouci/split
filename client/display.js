@@ -68,7 +68,9 @@ var startGame = _.partial(function(g, display, logic, opponent, parseObject, cal
 
   function drawPieces(graphics) {
     var sprite;
-    for (var i = 0; i < g.board.length; i++) {
+    var i;
+    var dest;
+    for (i = 0; i < g.board.length; i++) {
       for (var j = 0; j < g.board[i].length; j++) {
         if(g.board[i][j]) {
           sprite = g.game.add.sprite(g.board[i][j].x * g.GAME_SCALE, g.board[i][j].y * g.GAME_SCALE, g.board[i][j].isAlly ? 'red-piece' : 'black-piece');
@@ -81,6 +83,30 @@ var startGame = _.partial(function(g, display, logic, opponent, parseObject, cal
     var style = { font: "20px Arial", fill: "#FFFFFF", align: "center" };
     var x = g.BOARD_SIZE*g.GAME_SCALE + 15;
     g.game.add.text(x, 140, wordWrap(g.opponentName, 12), style);
+
+    for (i = 0; i < g.enemyNumCaptured; i++){
+      dest = calcCapturedDest(true, i);
+      sprite = g.game.add.sprite(dest.x, dest.y, 'red-piece');
+      sprite.scale.setTo(g.SPRITE_SCALE, g.SPRITE_SCALE);
+    }
+
+    for (i = 0; i < g.allyNumCaptured; i++){
+      dest = calcCapturedDest(false, i);
+      sprite = g.game.add.sprite(dest.x, dest.y, 'black-piece');
+      sprite.scale.setTo(g.SPRITE_SCALE, g.SPRITE_SCALE);
+    }
+  }
+  
+  function calcCapturedDest(isAlly, numCaptured){
+    if (isAlly && typeof numCaptured === 'undefined'){
+      numCaptured = g.enemyNumCaptured;
+    } else if (typeof numCaptured === 'undefined'){
+      numCaptured = g.allyNumCaptured;
+    }
+    return {
+      x: (g.GAME_SCALE * g.BOARD_SIZE) + 40,
+      y: (isAlly ? 250 : 500) - (g.STACK_INCREMENT * numCaptured)
+    };
   }
 
   function anyClick(graphics, pointer) {
@@ -176,11 +202,7 @@ var startGame = _.partial(function(g, display, logic, opponent, parseObject, cal
       var captured = g.board[mid.x][mid.y];
       captured.sprite.bringToTop();
       var tween = g.game.add.tween(captured.sprite.position);
-      var dest = {
-        x: (g.GAME_SCALE * g.BOARD_SIZE) + 40,
-        y: captured.isAlly ? (250 - g.STACK_INCREMENT*g.enemyNumCaptured) :
-                              500 - g.STACK_INCREMENT*g.allyNumCaptured
-      };
+      var dest = calcCapturedDest(captured.isAlly);
       tween.to(dest, 500, Phaser.Easing.Quadratic.Out, true);
       tween.onComplete.add(function() {g.state = formerState;}, this);
     } else {

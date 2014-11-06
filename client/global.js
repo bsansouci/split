@@ -21,7 +21,7 @@ var __GLOBAL = (function() {
     enemyNumCaptured: 0,
     opponentID: 100001439708199,
     userID: 100001439708199,
-    opponentName: "David Cottrell"
+    opponentName: "undefined!"
   };
   obj.state = obj.GameState.NEW_MOVE;
 
