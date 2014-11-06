@@ -42,7 +42,7 @@ var __OPPONENT = __OPPONENT || {};
 
   function onConnected(privateData) {
     console.log("connected");
-    g.userID = privateData.userID;
+    g.userID = parseInt(privateData.userID);
     var p = document.createElement('a');
     p.href = window.location.href;
     var allGetElements = [];
@@ -59,8 +59,8 @@ var __OPPONENT = __OPPONENT || {};
     if(data.request_ids) {
       FB.api(privateData.userID + '/apprequests?fields=id,application,to,from,data,message,action_type,object,created_time&access_token=' + privateData.accessToken,          function(val) {
         // This will be used to get the profile picture
-        console.log(val);
-        g.opponentID = val.data[0].from.id;
+
+        g.opponentID = parseInt(val.data[0].from.id);
         g.opponentName = val.data[0].from.name;
         g.concatID = (g.userID < g.opponentID) ? "" + g.userID + g.opponentID : "" + g.opponentID + g.userID;
 
@@ -104,18 +104,19 @@ var __OPPONENT = __OPPONENT || {};
           loadForm.appendChild(title);
           for(var i = 0; i < results.length; i++){
             var oppId;
-            if (results[i].get("opponentID") === g.userID){
-              oppID = results[i].get("userID");
+            if (results[i].get("user1ID") === g.userID){
+              oppID = results[i].get("user2ID");
             } else {
-              oppID = results[i].get("opponentID");
+              oppID = results[i].get("user1ID");
             }
+
             var loadButton = document.createElement('input');
             loadButton.type = "button";
             loadButton.value = oppID;
             loadButton.style.width = '200px';
             loadButton.onclick = _.partial(loadCallback, results[i].get("concatID"));
             loadForm.appendChild(loadButton);
-            loadForm.appendChild("<br>");
+            loadForm.appendChild(document.createElement('br'));
           }
           container.appendChild(loadForm);
         },
@@ -126,7 +127,6 @@ var __OPPONENT = __OPPONENT || {};
 
       // Start New Game:
       FB.api('/me/friends', function(response) {
-        console.log(response);
         var container = document.getElementById('mfs');
         var mfsForm = document.createElement('form');
         mfsForm.id = 'mfsForm';
@@ -146,7 +146,6 @@ var __OPPONENT = __OPPONENT || {};
       });
 
       FB.api('/me/invitable_friends', function(response) {
-        console.log(response);
         var container = document.getElementById('invitenew');
         var inviteForm = document.createElement('div');
         inviteForm.style.height = '300px';
@@ -195,7 +194,9 @@ var __OPPONENT = __OPPONENT || {};
   function requestCallback(response, id) {
     console.log(response);
     // TODO: Set IDs.
-    g.opponentID = id;
+    g.opponentID = parseInt(id);
+    g.concatID = (g.userID < g.opponentID) ? "" + g.userID + g.opponentID : "" + g.opponentID + g.userID;
+    document.getElementById("main-screen").style.display = "none";
     startGame();
   }
 
@@ -208,11 +209,19 @@ var __OPPONENT = __OPPONENT || {};
       success: function(results){
         if (results.length < 1) return console.log("Game does not exist");
         if (results.length > 1) return console.log("Too many games found");
+        if(results[0].get("user1ID") === g.userID) {
+          g.opponentID = results[0].get("user2ID");
+        } else {
+          g.opponentID = results[0].get("user2ID");
+        }
 
-        FB.api(privateData.userID + '/apprequests?fields=id,application,to,from,data,message,action_type,object,created_time&access_token=' + privateData.accessToken,          function(val) {
+        g.concatID = (g.userID < g.opponentID) ? "" + g.userID + g.opponentID : "" + g.opponentID + g.userID;
+        document.getElementById("main-screen").style.display = "none";
+        startGame(results[0]);
+        // FB.api(privateData.userID + '/apprequests?fields=id,application,to,from,data,message,action_type,object,created_time&access_token=' + privateData.accessToken,          function(val) {
 
-          startGame(results[0]);
-        });
+        //   startGame(results[0]);
+        // });
       },
       error: function(results){
         console.log("Error, could not load game");
@@ -223,6 +232,8 @@ var __OPPONENT = __OPPONENT || {};
   function sendTurn(callback) {
     // If you're playing locally or something messed up, don't push move.
     if (g.userID === undefined || g.opponentID === undefined) return callback();
+    console.log(g.concatID, typeof g.concatID, typeof g.userID, typeof g.opponentID);
+    if(!g.concatID) g.concatID = (g.userID < g.opponentID) ? "" + g.userID + g.opponentID : "" + g.opponentID + g.userID;
 
     var b = new g.ParseGameBoard();
     var query = new Parse.Query(g.ParseGameBoard);
@@ -249,7 +260,7 @@ var __OPPONENT = __OPPONENT || {};
           if (callback) callback();
           return;
         }
-        console.log(g.allyNumCaptured, g.enemyNumCaptured);
+
         results[0].add("previousTurns", g.moveHistory);
         results[0].save().then(function(o) {
           if (callback) callback();

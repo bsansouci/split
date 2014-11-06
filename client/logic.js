@@ -116,7 +116,7 @@ var __DISPLAY = __DISPLAY || {};
         y: src.srcY
       };
     }
-
+    console.log("moving from", src, "to", dest);
     g.board[dest.x][dest.y] = g.board[src.x][src.y];
     g.board[src.x][src.y] = null;
     g.board[dest.x][dest.y].x = dest.x;
