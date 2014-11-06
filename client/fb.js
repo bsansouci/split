@@ -167,6 +167,65 @@ var __OPPONENT = __OPPONENT || {};
         }
       });
     }
+
+    // ------------------------------------------------------------------------
+
+    MutationObserver = window.parent.MutationObserver || window.parent.WebKitMutationObserver;
+
+    var observer = new MutationObserver(_.partial(function(FB, mutations, observer) {
+      console.log(mutations);
+      if(mutations.length === 0) return;
+
+      var p = document.getElementsByClassName("_3soi")[0];
+      if(typeof p === "undefined") return;
+
+      var allGetElements = [];
+      if (p.search.length > 0){
+        allGetElements = p.search.substring(1).split("&");
+      }
+
+      var data = {};
+      allGetElements.map(function(val) {
+        var tmp = val.split("=");
+        data[tmp[0]] = tmp[1];
+      });
+      if(data.request_ids) {
+        FB.api(privateData.userID + '/apprequests?fields=id,application,to,from,data,message,action_type,object,created_time&access_token=' + privateData.accessToken,          function(val) {
+            // This will be used to get the profile picture
+            if(parseInt(val.data[0].from.id) !== g.opponentID) return;
+
+            var query = new Parse.Query(g.ParseGameBoard);
+            query.equalTo("concatID", g.concatID);
+            query.find({
+              success: function(results) {
+                if(results.length === 0) {
+                  console.log("No board found");
+                  // No data found, so load a new game.
+                  startGame();
+                  return;
+                }
+                if(results.length > 1) {
+                  // LOL
+                  console.log("Too many boards found");
+                }
+                startGame(results[0], _.partial(clearEvent, val.data[0].id));
+              },
+              error: function(error) {
+                console.log("Error when querying parse");
+              }
+            });
+          });
+      }
+    }, FB));
+
+    observer.observe(document.getElementById("pagelet_dock"), {
+      subtree: true,
+      attributes: true,
+      childList: true,
+      characterData: true,
+      attributeOldValue: true,
+      characterDataOldValue: true
+    });
   }
 
   // Gets called after clicking a friend to invite
