@@ -137,7 +137,7 @@ var __OPPONENT = __OPPONENT || {};
           var sendButton = document.createElement('input');
           sendButton.type = 'button';
           sendButton.value = response.data[i].name;
-          sendButton.onclick = _.partial(sendRequest, response.data[i].id);
+          sendButton.onclick = _.partial(sendRequest, response.data[i].id, response.data[i].name);
           sendButton.style.width = '200px';
           mfsForm.appendChild(sendButton);
           mfsForm.appendChild(document.createElement('br'));
@@ -160,7 +160,7 @@ var __OPPONENT = __OPPONENT || {};
           var sendButton = document.createElement('input');
           sendButton.type = 'button';
           sendButton.value = response.data[i].name;
-          sendButton.onclick = _.partial(sendRequest, response.data[i].id);
+          sendButton.onclick = _.partial(sendRequest, response.data[i].id, response.data[i].name);
           sendButton.style.width = '200px';
           inviteForm.appendChild(sendButton);
           inviteForm.appendChild(document.createElement('br'));
@@ -170,9 +170,9 @@ var __OPPONENT = __OPPONENT || {};
   }
 
   // Gets called after clicking a friend to invite
-  function sendRequest(id) {
+  function sendRequest(id, name) {
     console.log("id:" + id);
-    requestCallback(null, id);
+    requestCallback(id, name);
     // Get the list of selected friends
     // var sendUIDs = '';
     // var mfsForm = document.getElementById('mfsForm');
@@ -191,10 +191,10 @@ var __OPPONENT = __OPPONENT || {};
   }
 
   // Gets called after sending the new game request.
-  function requestCallback(response, id) {
-    console.log(response);
+  function requestCallback(id, name) {
     // TODO: Set IDs.
     g.opponentID = parseInt(id);
+    g.opponentName = name;
     g.concatID = (g.userID < g.opponentID) ? "" + g.userID + g.opponentID : "" + g.opponentID + g.userID;
     document.getElementById("main-screen").style.display = "none";
     startGame();
@@ -249,13 +249,13 @@ var __OPPONENT = __OPPONENT || {};
             BOARD_SIZE: g.BOARD_SIZE,
             NUM_ROWS: g.NUM_ROWS
           }).then(function(object) {
-            // FB.ui({method: 'apprequests',
-            //   message: 'This is a newer message.',
-            //   to: '1216678154',
-            //   action_type:'turn',
-            // }, function(response){
-            //   console.log(response);
-            // });
+            FB.ui({method: 'apprequests',
+              message: 'Hey ' + g.opponentName + ' it\'s your turn!',
+              to: g.opponentID,
+              action_type:'turn',
+            }, function(response){
+              console.log(response);
+            });
           });
           if (callback) callback();
           return;
@@ -264,13 +264,13 @@ var __OPPONENT = __OPPONENT || {};
         results[0].add("previousTurns", g.moveHistory);
         results[0].save().then(function(o) {
           if (callback) callback();
-          // FB.ui({method: 'apprequests',
-          //   message: 'This is a newer message.',
-          //   to: '1216678154',
-          //   action_type:'turn',
-          // }, function(response){
-          //   console.log(response);
-          // });
+          FB.ui({method: 'apprequests',
+            message: 'Hey ' + g.opponentName + ' it\'s your turn!',
+            to: g.opponentID,
+            action_type:'turn',
+          }, function(response){
+            console.log(response);
+          });
         });
       },
       error: function(error) {
