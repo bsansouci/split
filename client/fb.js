@@ -103,20 +103,32 @@ var __OPPONENT = __OPPONENT || {};
           title.innerHTML = "<h3>Load a Game</h3>";
           loadForm.appendChild(title);
           for(var i = 0; i < results.length; i++){
-            var oppId;
-            if (results[i].get("user1ID") === g.userID){
-              oppID = results[i].get("user2ID");
-            } else {
-              oppID = results[i].get("user1ID");
-            }
+            (function(game) {
+              var oppID;
+              if (results[i].get("user1ID") === g.userID){
+                oppID = results[i].get("user2ID");
+              } else {
+                oppID = results[i].get("user1ID");
+              }
+              FB.api("/"+oppID,
+                function(val) {
+                  var loadButton = document.createElement('input');
+                  loadButton.type = "button";
+                  loadButton.value = val.name;
+                  loadButton.style.width = '200px';
+                  g.opponentName = val.name;
+                  g.opponentID = oppID;
+                  g.concatID = (g.userID < g.opponentID) ? "" + g.userID + g.opponentID : "" + g.opponentID + g.userID;
 
-            var loadButton = document.createElement('input');
-            loadButton.type = "button";
-            loadButton.value = oppID;
-            loadButton.style.width = '200px';
-            loadButton.onclick = _.partial(loadCallback, results[i].get("concatID"));
-            loadForm.appendChild(loadButton);
-            loadForm.appendChild(document.createElement('br'));
+                  loadButton.onclick = function() {
+                    document.getElementById("main-screen").style.display = "none";
+                    startGame(game);
+                  };
+                  // loadButton.onclick = _.partial(loadCallback, results[i].get("concatID"));
+                  loadForm.appendChild(loadButton);
+                  loadForm.appendChild(document.createElement('br'));
+              });
+            })(results[i]);
           }
           container.appendChild(loadForm);
         },
@@ -201,33 +213,33 @@ var __OPPONENT = __OPPONENT || {};
   }
 
   // Gets called after clicking a loadable game.
-  function loadCallback(id){
-    console.log("loading: " + id);
-    var query = new Parse.Query(g.ParseGameBoard);
-    query.equalTo("concatID", id);
-    query.find({
-      success: function(results){
-        if (results.length < 1) return console.log("Game does not exist");
-        if (results.length > 1) return console.log("Too many games found");
-        if(results[0].get("user1ID") === g.userID) {
-          g.opponentID = results[0].get("user2ID");
-        } else {
-          g.opponentID = results[0].get("user1ID");
-        }
+  // function loadCallback(id){
+  //   console.log("loading: " + id);
+  //   var query = new Parse.Query(g.ParseGameBoard);
+  //   query.equalTo("concatID", id);
+  //   query.find({
+  //     success: function(results){
+  //       if (results.length < 1) return console.log("Game does not exist");
+  //       if (results.length > 1) return console.log("Too many games found");
+  //       if(results[0].get("user1ID") === g.userID) {
+  //         g.opponentID = results[0].get("user2ID");
+  //       } else {
+  //         g.opponentID = results[0].get("user1ID");
+  //       }
 
-        g.concatID = (g.userID < g.opponentID) ? "" + g.userID + g.opponentID : "" + g.opponentID + g.userID;
-        document.getElementById("main-screen").style.display = "none";
-        FB.api("/"+g.opponentID,
-          function(val) {
-            g.opponentName = val.name;
-            startGame(results[0]);
-        });
-      },
-      error: function(results){
-        console.log("Error, could not load game");
-      }
-    });
-  }
+  //       g.concatID = (g.userID < g.opponentID) ? "" + g.userID + g.opponentID : "" + g.opponentID + g.userID;
+  //       document.getElementById("main-screen").style.display = "none";
+  //       FB.api("/"+g.opponentID,
+  //         function(val) {
+  //           g.opponentName = val.name;
+  //           startGame(results[0]);
+  //       });
+  //     },
+  //     error: function(results){
+  //       console.log("Error, could not load game");
+  //     }
+  //   });
+  // }
 
   function sendTurn(callback) {
     // If you're playing locally or something messed up, don't push move.
