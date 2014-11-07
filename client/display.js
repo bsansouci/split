@@ -64,6 +64,7 @@ var startGame = _.partial(function(g, display, logic, opponent, parseObject, cal
     g.game.load.image('black-piece', 'assets/pics/black-piece.png');
     g.game.load.image('red-king', 'assets/pics/red-king.png');
     g.game.load.image('black-king', 'assets/pics/black-king.png');
+    g.game.load.image('menu-button', 'assets/pics/menu.png');
     try {
       g.game.load.image('profile',
         'https://graph.facebook.com/'+g.opponentID+
@@ -115,6 +116,14 @@ var startGame = _.partial(function(g, display, logic, opponent, parseObject, cal
       sprite = g.game.add.sprite(dest.x, dest.y, 'black-piece');
       sprite.scale.setTo(g.SPRITE_SCALE, g.SPRITE_SCALE);
     }
+
+      sprite = g.game.add.sprite(g.GAME_SCALE*g.BOARD_SIZE + 25,
+          g.GAME_SCALE*g.BOARD_SIZE/2, 'menu-button');
+      sprite.inputEnabled = true;
+      sprite.events.onInputDown.add(function(){
+        g.game.destroy();
+        document.getElementById("main-screen").style.display = "";
+      }, this);
   }
   
   function calcCapturedDest(isAlly, numCaptured){
@@ -130,6 +139,8 @@ var startGame = _.partial(function(g, display, logic, opponent, parseObject, cal
   }
 
   function anyClick(graphics, pointer) {
+    if (pointer.x > g.BOARD_SIZE*g.GAME_SCALE ||
+          pointer.y > g.BOARD_SIZE*g.GAME_SCALE) return;
     var pos = getBoardPos(pointer);
     // console.log("State: ", g.state, " Pos: ", pos, "currentPossibleMoves", g.currentPossibleMoves);
     switch(g.state) {
@@ -239,12 +250,15 @@ var startGame = _.partial(function(g, display, logic, opponent, parseObject, cal
 
 
   function drawBoard(graphics) {
+    var boardSizePx = g.GAME_SCALE*g.BOARD_SIZE;
     graphics.beginFill(0x601407);
-    graphics.drawRect(0, 0, g.GAME_SCALE*g.BOARD_SIZE+150, g.GAME_SCALE*g.BOARD_SIZE);
+    graphics.drawRect(0, 0, boardSizePx+150, boardSizePx);
+
+    graphics.beginFill(0x601234);
 
     graphics.beginFill(0x181818);
     graphics.lineStyle(5, 0xffd900, 1);
-    graphics.drawRect(0, 0, g.GAME_SCALE*g.BOARD_SIZE, g.GAME_SCALE*g.BOARD_SIZE);
+    graphics.drawRect(0, 0, boardSizePx, boardSizePx);
     graphics.beginFill(0xFF3300);
     graphics.lineStyle(5, 0xffd900, 1);
     for (var i = 0; i < g.BOARD_SIZE/2; i++) {

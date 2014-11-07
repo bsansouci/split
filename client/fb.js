@@ -124,7 +124,6 @@ var __OPPONENT = __OPPONENT || {};
                     document.getElementById("main-screen").style.display = "none";
                     startGame(game);
                   };
-                  // loadButton.onclick = _.partial(loadCallback, results[i].get("concatID"));
                   loadForm.appendChild(loadButton);
                   loadForm.appendChild(document.createElement('br'));
               });
