@@ -137,6 +137,7 @@ var __OPPONENT = __OPPONENT || {};
       });
 
       // Start New Game:
+      /*
       FB.api('/me/friends', function(response) {
         var container = document.getElementById('mfs');
         var mfsForm = document.createElement('form');
@@ -177,68 +178,51 @@ var __OPPONENT = __OPPONENT || {};
           inviteForm.appendChild(document.createElement('br'));
         }
       });
+        */
     }
+      
+      var container = document.getElementById('invitenew');
+      var sendButton = document.createElement('input');
+      sendButton.type = 'button';
+      sendButton.value = "Start New Game";
+      sendButton.onclick = function(){
+        FB.ui({method: 'apprequests',
+          message: 'Play Checkers with me!'
+        }, function(response){
+          FB.api("/"+response.to[0], function(user){
+            requestCallback(user.id, user.name);
+          });
+        });
+      };
+      container.appendChild(document.createElement('br'));
+      container.appendChild(sendButton);
   }
 
   // Gets called after clicking a friend to invite
-  function sendRequest(id, name) {
+  function sendRequest(id, name, newInvite) {
     console.log("id:" + id);
-    requestCallback(id, name);
-    // Get the list of selected friends
-    // var sendUIDs = '';
-    // var mfsForm = document.getElementById('mfsForm');
-    //   for(var i = 0; i < mfsForm.friends.length; i++) {
-    //     if(mfsForm.friends[i].checked) {
-    //       sendUIDs += mfsForm.friends[i].value + ',';
-    //     }
-    //   }
 
-    // // Use FB.ui to send the Request(s)
-    // FB.ui({method: 'apprequests',
-    //   to: sendUIDs,
-    //   title: 'Checkers',
-    //   message: 'Try Checkers!',
-    // }, _.partial(requestCallback, id));
+    if (newInvite){
+      // Use FB.ui to send the Request(s)
+      FB.ui({method: 'apprequests',
+        to: id,
+        title: 'Checkers',
+        message: 'Try Checkers!',
+      }, _.partial(requestCallback, id, name));
+    } else {
+      requestCallback(id, name);
+    }
   }
 
   // Gets called after sending the new game request.
   function requestCallback(id, name) {
-    // TODO: Set IDs.
+    console.log(id);
     g.opponentID = parseInt(id);
     g.opponentName = name;
     g.concatID = (g.userID < g.opponentID) ? "" + g.userID + g.opponentID : "" + g.opponentID + g.userID;
     document.getElementById("main-screen").style.display = "none";
     startGame();
   }
-
-  // Gets called after clicking a loadable game.
-  // function loadCallback(id){
-  //   console.log("loading: " + id);
-  //   var query = new Parse.Query(g.ParseGameBoard);
-  //   query.equalTo("concatID", id);
-  //   query.find({
-  //     success: function(results){
-  //       if (results.length < 1) return console.log("Game does not exist");
-  //       if (results.length > 1) return console.log("Too many games found");
-  //       if(results[0].get("user1ID") === g.userID) {
-  //         g.opponentID = results[0].get("user2ID");
-  //       } else {
-  //         g.opponentID = results[0].get("user1ID");
-  //       }
-
-  //       g.concatID = (g.userID < g.opponentID) ? "" + g.userID + g.opponentID : "" + g.opponentID + g.userID;
-  //       document.getElementById("main-screen").style.display = "none";
-  //       FB.api("/"+g.opponentID,
-  //         function(val) {
-  //           g.opponentName = val.name;
-  //           startGame(results[0]);
-  //       });
-  //     },
-  //     error: function(results){
-  //       console.log("Error, could not load game");
-  //     }
-  //   });
-  // }
 
   function sendTurn(callback) {
     // If you're playing locally or something messed up, don't push move.

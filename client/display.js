@@ -121,7 +121,9 @@ var startGame = _.partial(function(g, display, logic, opponent, parseObject, cal
           g.GAME_SCALE*g.BOARD_SIZE/2, 'menu-button');
       sprite.inputEnabled = true;
       sprite.events.onInputDown.add(function(){
+        
         g.game.destroy();
+        g.game = null;
         document.getElementById("main-screen").style.display = "";
       }, this);
   }
@@ -155,13 +157,16 @@ var startGame = _.partial(function(g, display, logic, opponent, parseObject, cal
         var p = {destX: pos.x, destY: pos.y};
         var move = _.where(g.currentPossibleMoves, p)[0];
 
-        //if(g.board[pos.x][pos.y]) return clickedOnPiece(pos.x, pos.y, graphics);
-
-        if(!move && g.moveHistory.length === 0) return cancelMove(graphics);
+        if(!move && g.moveHistory.length === 0){
+          if(g.board[pos.x][pos.y] && g.board[pos.x][pos.y].isAlly){
+            cancelMove(graphics);
+            clickedOnPiece(pos.x, pos.y, graphics);
+            return;
+          } else return cancelMove(graphics);
+        }
         else if (!move) return;
 
         g.moveHistory.push(move);
-        // logic.movePiece(move);
         if (!move.isFinal){
           clickedOnPiece(pos.x, pos.y, graphics);
         } else {
